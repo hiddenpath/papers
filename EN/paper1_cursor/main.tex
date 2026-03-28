@@ -1,36 +1,53 @@
 \documentclass[11pt]{article}
-
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-\usepackage{microtype}
+% lmodern fallback: use default CM fonts if lmodern unavailable
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+% Disable microtype when using bitmap fonts (CM) to avoid font expansion error
+\IfFileExists{lmodern.sty}{\usepackage{microtype}}{}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,mathtools,amsthm}
 \usepackage{booktabs}
 \usepackage{tabularx}
-\usepackage{threeparttable}
+% threeparttable is optional - comment out if unavailable
+% \usepackage{threeparttable}
 \usepackage{graphicx}
-\usepackage{tikz}
+% TikZ for figures - requires texlive-pictures
+\IfFileExists{tikz.sty}{\usepackage{tikz}}{}
 \usepackage{longtable}
 \usepackage{xcolor}
 \usepackage{caption}
-\usepackage{subcaption}
-\usepackage{enumitem}
+% subcaption requires texlive-latex-extra
+\IfFileExists{subcaption.sty}{\usepackage{subcaption}}{}
+% enumitem requires texlive-latex-extra
+% If unavailable, define a no-op for leftmargin option
+\IfFileExists{enumitem.sty}{%
+  \usepackage{enumitem}%
+}{%
+  \newcommand{\leftmargin}[1]{}%
+}
 \usepackage{listings}
 \usepackage[hidelinks]{hyperref}
-\usepackage[nameinlink,noabbrev]{cleveref}
+% cleveref requires texlive-latex-extra
+\IfFileExists{cleveref.sty}{%
+  \usepackage[nameinlink,noabbrev]{cleveref}%
+}{%
+  % Fallback: define \cref as \ref
+  \newcommand{\cref}[1]{Figure~\ref{#1}}%
+}
 
 \newtheorem{definition}{Definition}
 
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+% TikZ library - only load if tikz is available
+\IfFileExists{tikz.sty}{\usetikzlibrary{arrows.meta,positioning,shapes.geometric}}{}
 
 \lstdefinestyle{paperlisting}{
-  basicstyle=\ttfamily\small,
-  breaklines=true,
-  frame=single,
-  columns=fullflexible,
-  keepspaces=true,
-  showstringspaces=false
+ basicstyle=\ttfamily\small,
+ breaklines=true,
+ frame=single,
+ columns=fullflexible,
+ keepspaces=true,
+ showstringspaces=false
 }
 \lstset{style=paperlisting}
 
@@ -39,11 +56,8 @@
 \date{March 2026}
 
 \begin{document}
-
 \maketitle
-
 \input{sections/00_abstract}
-
 \input{sections/01_introduction}
 \input{sections/02_formal_model}
 \input{sections/03_minimal_execution}
@@ -57,8 +71,6 @@
 \input{sections/11_limitations}
 \input{sections/12_conclusion}
 \input{sections/appendices}
-
 \bibliographystyle{plain}
 \bibliography{bibliography/refs}
-
 \end{document}
