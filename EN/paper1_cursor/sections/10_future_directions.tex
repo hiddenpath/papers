@@ -19,7 +19,7 @@ The execution-layer architecture naturally supports edge-computing scenarios. Ru
 \subsection{Asynchronous Notification Support}
 
 While the current design relies on polling for long-running tasks, future runtime versions may support callback-based notifications. In this model:
-\begin{itemize}[leftmargin=*,nosep]
+\begin{itemize}
   \item providers register webhook endpoints in their manifests,
   \item the runtime translates provider-specific callbacks into protocol-standard events, and
   \item the Policy Orchestration Layer subscribes to capability-completion events rather than polling.

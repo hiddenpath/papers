@@ -15,7 +15,7 @@ Under this constraint, runtime semantics are specified through core responsibili
 
 The runtime serves as a standardized capability execution engine. Its responsibilities are intentionally limited to six core functions:
 
-\begin{enumerate}[leftmargin=1.5em]
+\begin{enumerate}
     \item \textbf{Capability Invocation:} execute a capability defined in the AI Protocol. The runtime receives standardized capability requests and invokes the appropriate execution path.
     \item \textbf{Protocol Translation:} convert protocol-level requests into provider-specific API calls. This translation layer enables applications to work with standardized capability definitions while the runtime handles provider-specific implementations.
     \item \textbf{Result Normalization:} return standardized responses to the caller. Regardless of which provider executed the capability, the runtime normalizes results into a consistent format.
@@ -34,7 +34,7 @@ This choice reflects production constraints: transient network failures are comm
 
 To maintain its minimal design, the runtime explicitly avoids:
 
-\begin{itemize}[leftmargin=1.5em]
+\begin{itemize}
     \item \textbf{Agent Planning:} deciding what sequence of capabilities to invoke.
     \item \textbf{Workflow Orchestration:} managing complex multi-capability workflows.
     \item \textbf{Application Logic:} implementing application-specific business logic.
