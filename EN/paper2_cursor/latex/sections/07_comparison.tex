@@ -1,0 +1,57 @@
+%=============================================================================
+% Section 7: Comparison with Existing Frameworks
+%=============================================================================
+\section{Comparison with Existing Frameworks}
+
+\subsection{Current Approaches}
+
+Current AI frameworks focus primarily on agent logic and tool integration:
+
+\textbf{LangChain~\cite{brooks1991}:} Provides mechanisms for tool invocation within agent workflows. However, LangChain embeds capability execution directly within the application framework, mixing orchestration and execution.
+
+\textbf{AutoGPT:} Implements autonomous agents with tool use, but tightly couples planning with tool execution, limiting reusability.
+
+\textbf{Model Context Protocol (MCP)~\cite{openai2023}:} Defines capability-like tools for model interaction, but lacks a unified action layer architecture.
+
+\subsection{Distinctive Approach}
+
+The Contact Layer model differs by treating capability execution as an \textbf{independent architectural component}. This separation enables:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Reusable Runtimes:} Execution components can be shared across applications
+\item \textbf{Standardized Capability Protocols:} Capabilities can be described uniformly
+\item \textbf{Flexible Orchestration:} Routing strategies can evolve independently
+\end{itemize}
+
+\subsection{Integration Path}
+
+Existing frameworks can integrate the contact layer concept:
+\begin{enumerate}[label=\arabic*.]
+\item Separate tool invocation from agent logic
+\item Define capabilities through standardized protocols
+\item Implement routing and execution as distinct components
+\item Enable provider abstraction through capability interfaces
+\end{enumerate}
+
+This integration path allows frameworks to evolve toward the contact layer architecture incrementally.
+
+\subsection{Comparison with Multi-Agent Frameworks}
+
+\begin{table}[h]
+\centering
+\caption{Comparison of Contact Layer with Multi-Agent Frameworks}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Aspect} & \textbf{Contact Layer} & \textbf{OpenAI Swarm} & \textbf{CrewAI} & \textbf{LangChain} \\
+\midrule
+Architecture & Layer-based separation & Agent-centric & Role-based & Tool-centric \\
+Capability Model & Protocol-defined & Agent-owned & Task-specific & Tool-wrapped \\
+Provider Abstraction & Full (via protocol) & Partial & Limited & Framework-specific \\
+Routing & Context-aware, dynamic & Handoff-based & Sequential & Chain-based \\
+Safety Mechanisms & Layer-enforced & Agent-level & Task-level & Application-level \\
+Runtime Portability & Protocol-standardized & Platform-locked & Framework-locked & Framework-locked \\
+State Management & Externalized & Agent-maintained & Crew-maintained & Chain-maintained \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Contact Layer differs fundamentally by treating capability execution as an independent architectural layer rather than embedding it within agent logic or framework-specific tool abstractions.

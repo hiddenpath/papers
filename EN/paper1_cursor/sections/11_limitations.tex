@@ -1,13 +1,47 @@
+%=============================================================================
+% Section 11: Limitations and Evaluation Agenda
+%=============================================================================
 \section{Limitations and Evaluation Agenda}
 
-This work focuses on architectural formalization and runtime boundaries. It does not provide a full-scale benchmark study of latency overhead, translation-cost distribution, or end-to-end economic efficiency under production traffic.
+This work focuses on architectural formalization and runtime boundaries. Beyond the evaluation agenda, we acknowledge several design tradeoffs and known limitations.
+
+\subsection{Design Tradeoffs}
+
+\textbf{Minimal vs.\ Full-Featured.} The AI Execution Layer deliberately constrains its responsibility to deterministic invocation. This minimalism enables portability and clear boundaries but sacrifices convenience features found in integrated frameworks:
+\begin{itemize}
+    \item \emph{No built-in policy logic.} Routing decisions, fallback chains, and cost optimization must be implemented by the Contact Layer, not the runtime itself.
+    \item \emph{No conversation management.} Chat history, context windowing, and memory are outside the execution boundary.
+    \item \emph{No built-in observability stack.} Metrics, tracing, and logging hooks are provided, but the observability infrastructure is deployment-specific.
+\end{itemize}
+
+\textbf{Protocol vs.\ Implementation.} The design prioritizes protocol stability over implementation convenience. Capability manifests must be declared explicitly; there is no ``auto-discovery by introspection'' mechanism. This tradeoff reduces runtime magic but increases provider onboarding effort.
+
+\subsection{Known Boundaries}
+
+The architecture is not suitable for all scenarios:
+\begin{itemize}
+    \item \emph{Single-provider lock-in.} Applications using provider-specific features beyond standardized capabilities lose portability benefits.
+    \item \emph{Ultra-low-latency requirements.} The protocol translation layer adds overhead unsuitable for sub-millisecond response scenarios (e.g., high-frequency trading).
+    \item \emph{Offline-only environments.} While edge runtimes are supported, capability discovery and provider registration assume network connectivity during initialization.
+\end{itemize}
+
+\subsection{Dependency Assumptions}
+
+The architecture relies on several assumptions:
+\begin{itemize}
+    \item \emph{Protocol standardization.} The benefits diminish if providers do not adopt common capability schemas.
+    \item \emph{Provider cooperation.} Capability manifests must accurately describe provider behavior; misaligned manifests cause runtime failures.
+    \item \emph{Orchestration maturity.} Organizations without Contact Layer expertise may not fully realize the separation benefits.
+\end{itemize}
+
+\subsection{Evaluation Agenda}
 
 A complete systems evaluation should include:
 \begin{enumerate}
-  \item \textbf{Translation Overhead:} protocol-to-provider transformation latency and variance.
-  \item \textbf{Runtime Scalability:} throughput and tail latency under mixed synchronous and streaming workloads.
-  \item \textbf{Failure Behavior:} bounded-retry impact and error propagation under provider instability.
-  \item \textbf{Policy--Execution Separation Cost:} control-plane/data-plane interaction overhead under dynamic routing.
+    \item \textbf{Translation Overhead:} protocol-to-provider transformation latency and variance.
+    \item \textbf{Runtime Scalability:} throughput and tail latency under mixed synchronous/streaming workloads.
+    \item \textbf{Failure Behavior:} bounded retry impact and error propagation under provider instability.
+    \item \textbf{Policy-Execution Separation Cost:} control-plane/data-plane interaction overhead under dynamic routing.
 \end{enumerate}
 
 These measurements are left to subsequent experimental work and cross-runtime benchmark suites.

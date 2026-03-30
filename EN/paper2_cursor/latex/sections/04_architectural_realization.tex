@@ -1,0 +1,68 @@
+%=============================================================================
+% Section 4: Architectural Realization
+%=============================================================================
+\section{Architectural Realization}
+
+\subsection{From Concept to Architecture}
+
+While the contact layer is a conceptual model, it can be implemented through concrete system components. A practical architecture includes:
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  layerbox/.style={
+    draw, rectangle, minimum width=8cm, minimum height=0.8cm, align=center, font=\small
+  },
+  arrow/.style={
+    -{Stealth[length=3mm, width=2mm]}, thick, gray!60!black
+  }
+]
+% Layers
+\node[layerbox, fill=blue!8] (agent) at (0, 4) {Agent (Intelligent Behavior)};
+\draw[arrow] (0, 3.5) -- (0, 3);
+\node[layerbox, fill=green!8] (contact) at (0, 2.5) {Contact Layer (Routing/Policy)};
+\draw[arrow] (0, 2) -- (0, 1.5);
+\node[layerbox, fill=orange!8] (exec) at (0, 1) {Execution Runtime (Execution)};
+\draw[arrow] (0, 0.5) -- (0, 0);
+\node[layerbox, fill=gray!8] (cap) at (0, -0.5) {Capabilities (External Actions)};
+\end{tikzpicture}
+\caption{Contact Layer Architecture Components}
+\end{figure}
+
+\textbf{Agent:} Represents intelligent behavior. Agents reason about tasks, plan actions, and decide which capabilities should be invoked.
+
+\textbf{Contact Layer:} Performs capability routing and application policy decisions. This component determines which capability implementation to use, which provider should be selected, and which execution environment should handle the request.
+
+\textbf{Execution Runtime:} Executes capability calls. This component handles the mechanics of invoking APIs, running tools, and returning results.
+
+\textbf{Capabilities:} Represent actions available to the AI system.
+
+\subsection{Clarifying Terminology Boundaries}
+
+A common source of confusion is the relationship between Contact Layer and Execution Layer. Based on architectural clarity, we establish:
+
+\textbf{Original Intuition:} Many practitioners conceive of a single ``execution/contact layer'' that handles both routing decisions and execution mechanics. This intuition is correct---there is one macro layer that mediates between agents and capabilities.
+
+\textbf{Architectural Decomposition:} For software engineering purposes, this macro layer can be decomposed into two subcomponents:
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Contact Layer:} Handles routing, provider selection, and policy evaluation. This is the ``control plane'' of the action layer.
+\item \textbf{Execution Runtime:} Handles API invocation, tool execution, and result normalization. This is the ``data plane'' of the action layer.
+\end{enumerate}
+
+\textbf{Unified Understanding:} The AI Action Layer (Macro Layer) comprises the Contact Layer (Routing/Policy - Control Plane) and the Execution Runtime (Execution - Data Plane). This decomposition maintains software engineering clarity while preserving the conceptual unity of the action interface.
+
+\subsection{Precise Definition}
+
+We can now state precisely:
+
+\begin{quote}
+\textit{The Contact Layer (in the narrow sense) is the routing and policy component of the AI Action Layer, responsible for capability routing, provider selection, and policy evaluation.}
+\end{quote}
+
+And more broadly:
+
+\begin{quote}
+\textit{The Action Layer (in the broad sense) is the complete interface between AI cognition and the capability ecosystem, comprising both routing (contact) and execution (runtime) components.}
+\end{quote}
+
+This terminology clarification resolves the apparent contradiction while preserving both conceptual clarity and architectural precision.

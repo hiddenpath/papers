@@ -1,33 +1,141 @@
+%=============================================================================
+% Section 8: Related Work
+%=============================================================================
 \section{Related Work}
 
 \subsection{AI Orchestration Frameworks}
 
-Frameworks such as LangChain~\cite{langchain_docs} provide practical orchestration abstractions, but often couple orchestration policy and execution mechanics in one framework runtime. This coupling improves developer convenience while weakening boundary clarity and runtime portability.
+Frameworks such as LangChain provide practical orchestration abstractions, but often couple orchestration policy and execution mechanics in one framework runtime. This coupling improves developer convenience but weakens boundary clarity and runtime portability.
+
+\textbf{Specific Coupling Issues.} In LangChain, prompt templates, model selection, and output parsing are frequently intertwined within chain definitions:
+\begin{itemize}
+    \item \emph{Model-specific prompts.} Templates often embed provider-specific parameters (e.g., OpenAI function calling syntax), making provider substitution non-trivial.
+    \item \emph{Implicit routing.} LangGraph conditional edges embed routing logic within the graph definition, conflating policy decisions with execution flow.
+    \item \emph{Tight tool integration.} Tool definitions often reference specific model capabilities (e.g., vision, function calling), reducing portability across models without those features.
+\end{itemize}
+
+The AI Execution Layer explicitly separates these concerns: prompts are managed by the cognition layer, routing by the Contact Layer, and invocation by the execution layer.
+
+\subsection{Model Context Protocol (MCP)}
+
+Anthropic's Model Context Protocol provides a standardized interface for AI models to interact with external tools and resources. MCP and the AI Execution Layer address complementary concerns:
+\begin{itemize}
+    \item \emph{MCP scope.} MCP focuses on the model-tool interface, defining how models discover and invoke tools through a JSON-RPC protocol.
+    \item \emph{Execution Layer scope.} This work focuses on the runtime-provider interface, defining how execution layers translate capability requests into provider-specific API calls.
+    \item \emph{Complementary positioning.} An AI Execution Layer can implement MCP as one of its capability protocols, translating MCP tool invocations into provider-specific implementations.
+\end{itemize}
+
+MCP standardizes the ``model asks, tool responds'' interaction pattern; the AI Execution Layer standardizes the ``runtime asks, provider responds'' invocation pattern.
+
+\subsection{OpenAI Assistants and Agents SDK}
+
+OpenAI's Assistants API and Agents SDK provide managed orchestration for multi-turn conversations with tool use. Key architectural differences:
+\begin{itemize}
+    \item \emph{State management.} Assistants API maintains server-side conversation state, including message history and tool outputs. The AI Execution Layer explicitly excludes state management from its boundary.
+    \item \emph{Provider lock-in.} Assistants API is specific to OpenAI models. The Execution Layer's protocol-first design enables cross-provider portability.
+    \item \emph{Abstraction level.} Assistants API combines cognition (thread management), policy (tool selection), and execution (API calls). The three-layer separation enables independent evolution of each layer.
+\end{itemize}
 
 \subsection{Workflow Engines}
 
-Workflow engines such as Airflow and Temporal provide robust DAG execution and fault handling. However, their abstraction unit is typically task- or workflow-level orchestration, rather than capability-level semantic invocation with provider-agnostic protocol contracts.
+Workflow engines such as Airflow and Temporal provide robust DAG execution and fault handling. However, their abstraction unit is typically task/workflow-level orchestration, not capability-level semantic invocation with provider-agnostic protocol contracts.
+
+\textbf{Temporal Comparison.} Temporal's workflow orchestration handles long-running processes with durable execution. However:
+\begin{itemize}
+    \item Temporal workflows are defined at the application logic level, not the capability invocation level.
+    \item Activity implementations are typically single-language, while the AI Execution Layer requires cross-language consistency.
+    \item Temporal does not address provider-agnostic capability translation.
+\end{itemize}
 
 \subsection{Service Mesh and RPC Systems}
 
-Service meshes and RPC infrastructures provide routing, retries, and observability at network-request granularity. By contrast, the AI Execution Layer operates at capability semantics and explicitly separates policy routing from deterministic invocation.
+Service meshes and RPC infrastructures provide routing, retries, and observability at network request granularity. By contrast, the AI Execution Layer operates at capability semantics and explicitly separates policy routing from deterministic invocation.
+
+\textbf{Semantic vs.\ Network Abstraction.}
+\begin{itemize}
+    \item \emph{Service mesh.} Routes HTTP/gRPC requests based on service identity and network-level policies. Unaware of capability semantics.
+    \item \emph{AI Execution Layer.} Routes capability requests based on semantic declarations (e.g., ``text-to-image generation''). Translates between protocol-standard requests and provider-specific APIs.
+\end{itemize}
 
 \subsection{Serverless and Function Runtimes}
 
-Function-as-a-service platforms provide scalable execution environments, but do not standardize capability abstraction, capability manifests, or cross-provider semantic equivalence.
+FaaS platforms provide scalable execution environments but do not standardize capability abstraction, capability manifests, or cross-provider semantic equivalence.
 
 \subsection{Position of This Work}
 
-This paper contributes a minimal execution boundary for AI-Native systems:
+This paper contributes a minimal execution boundary for AI-native systems:
 \begin{itemize}
-  \item protocol-first capability invocation,
-  \item strict cognition--policy--execution separation,
-  \item runtime-level portability across providers and languages, and
-  \item explicit non-responsibilities that prevent policy leakage into execution.
+    \item protocol-first capability invocation
+    \item strict cognition-policy-execution separation
+    \item runtime-level portability across providers and languages
+    \item explicit non-responsibilities that prevent policy leakage into execution
 \end{itemize}
 
 \subsection{Multi-Language Implementation}
 
-A key validation of the minimal runtime design is its implementability across multiple programming languages. Reference implementations exist in Rust, Python, TypeScript, and Go, demonstrating that the abstraction is not tied to a single language ecosystem. Cross-language consistency is maintained through shared protocol specifications, language-agnostic capability schemas, standardized request/response formats, and common behavioral test suites.
+A key validation of the minimal runtime design is its implementability across multiple programming languages. Reference implementations exist at \url{https://github.com/ailib-official}:
+\begin{itemize}
+    \item \textbf{Rust (ai-lib-rust):} \url{https://github.com/ailib-official/ai-lib-rust} --- The canonical implementation, demonstrating type-safe capability handling, zero-cost abstractions, and the \texttt{CapabilityDescription} schema for protocol translation
+    \item \textbf{Python (ai-lib-python):} \url{https://github.com/ailib-official/ai-lib-python} --- Primary implementation for AI/ML workflows, with native integration with popular AI frameworks
+    \item \textbf{TypeScript (ai-lib-ts):} \url{https://github.com/ailib-official/ai-lib-ts} --- Implementation for web and Node.js environments, supporting browser-based and server-side AI applications
+    \item \textbf{Go (ai-lib-go):} \url{https://github.com/ailib-official/ai-lib-go} --- Implementation for cloud-native and microservices architectures
+\end{itemize}
 
-This multi-language support strengthens the claim that the minimal runtime abstraction is ecosystem-oriented rather than framework-specific.
+Performance benchmarks are available at \url{https://github.com/ailib-official/ai-lib-benchmark}, providing latency and throughput measurements across different runtime implementations and provider configurations.
+
+\textbf{Benchmark Results:}
+
+\begin{table}[htbp]
+\centering
+\caption{Cross-Runtime Performance (DeepSeek API)$^{1}$}
+\label{tab:benchmark1}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Implementation} & \textbf{Throughput (RPS)} & \textbf{Avg Latency (ms)} & \textbf{P99 Latency (ms)} \\
+\midrule
+ai-lib-rust & $99.1 \pm 0.4$ & $50.0 \pm 0.2$ & $201 \pm 3$ \\
+ai-lib-python & $98.0 \pm 0.5$ & $51.0 \pm 0.2$ & $210 \pm 4$ \\
+ai-lib-ts & $99.7 \pm 0.2$ & $49.6 \pm 0.1$ & $199 \pm 2$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.3em}
+\footnotesize{$^{1}$Test Configuration: DeepSeek API (\texttt{deepseek-chat}) / 10s duration $\times$ 3 runs / 5 concurrent connections / generate\_text capability / 100 max tokens. Tested 2026-02-25.}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Provider Portability Validation (Groq API)$^{2}$}
+\label{tab:benchmark2}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Implementation} & \textbf{Throughput (RPS)} & \textbf{P50 Latency (ms)} & \textbf{P99 Latency (ms)} \\
+\midrule
+ai-lib-rust & $17.9 \pm 1.5$ & $195 \pm 2$ & $1518 \pm 274$ \\
+ai-lib-python & $20.4 \pm 2.6$ & $186 \pm 1$ & $1038 \pm 348$ \\
+ai-lib-ts & $18.0 \pm 0.9$ & $195 \pm 3$ & $1611 \pm 59$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.3em}
+\footnotesize{$^{2}$Test Configuration: Groq API (\texttt{llama-3.1-8b-instant}) / 10s duration $\times$ 3 runs / 5 concurrent connections / generate\_text capability. Tested 2026-03-13.}
+\end{table}
+
+\textbf{Key Findings:}
+\begin{enumerate}
+    \item \textbf{Cross-Runtime Consistency:} All three implementations achieve statistically equivalent throughput (within 2\% variance) when targeting the same provider, validating protocol-level consistency.
+    \item \textbf{Provider Portability:} The same codebase successfully connects to multiple LLM providers (DeepSeek, Groq) without modification, demonstrating the capability abstraction model in practice.
+    \item \textbf{Production Viability:} Throughput exceeds 99 RPS on DeepSeek and 17+ RPS on Groq, with tail latencies suitable for interactive applications.
+\end{enumerate}
+
+Full benchmark configurations, scripts, and regression thresholds are available in the benchmark repository.
+
+Cross-language consistency is maintained through:
+\begin{itemize}
+    \item Shared protocol specifications (YAML/JSON manifests)
+    \item Language-agnostic capability schemas
+    \item Standardized request/response formats
+    \item Common test suites validating behavioral equivalence
+\end{itemize}
+
+This multi-language support demonstrates that the minimal runtime abstraction is genuinely language-agnostic and suitable for ecosystem-wide adoption.

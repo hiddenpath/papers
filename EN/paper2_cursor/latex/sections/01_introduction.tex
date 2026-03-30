@@ -1,0 +1,79 @@
+%=============================================================================
+% Section 1: Introduction
+%=============================================================================
+\section{Introduction}
+
+\subsection{The Limitation of Intelligence Alone}
+Artificial intelligence systems have achieved remarkable progress in reasoning, language understanding, and multimodal perception. Large-scale models from providers such as OpenAI~\cite{openai2023}, Anthropic~\cite{anthropic2024}, Google, and DeepSeek demonstrate increasingly sophisticated cognitive capabilities. However, a critical limitation remains:
+
+\begin{quote}
+\textit{Intelligence alone does not produce real-world impact.}
+\end{quote}
+
+For an AI system to perform meaningful tasks, it must interact with external systems. Examples include:
+\begin{itemize}[leftmargin=*]
+\item Retrieving information from knowledge bases
+\item Invoking APIs to perform actions
+\item Controlling devices in the physical world
+\item Executing automation workflows
+\item Interacting with digital services
+\end{itemize}
+
+In other words, \textbf{AI must connect its internal reasoning with external action}. This connection is what we define as the AI Contact Layer.
+
+\subsection{The Missing Conceptual Layer}
+While execution layers and runtime systems address implementation concerns, there exists a deeper conceptual question: What is the nature of the interface between AI intelligence and the external world?
+
+This question has both philosophical and practical dimensions:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Philosophical:} How do we understand the boundary between thought and action in AI systems?
+\item \textbf{Practical:} How do we architect systems that reliably bridge reasoning and execution?
+\end{itemize}
+
+The Contact Layer concept addresses both dimensions, providing:
+\begin{enumerate}[label=\arabic*.]
+\item A conceptual framework for understanding AI-world interaction
+\item An architectural model for implementing this interaction
+\item A unifying perspective that connects execution infrastructure with broader system design
+\end{enumerate}
+
+\subsection{Relationship to the Execution Layer Paper}
+This paper builds upon the AI Execution Layer architecture described in our companion work~\cite{wang2026execution}. The relationship between these works can be understood through the lens of the AI Action Layer:
+
+\textbf{Action Layer Decomposition:} The Action Layer comprises two subcomponents:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Contact Layer:} Routing, policy evaluation, provider selection (the ``control plane'')
+\item \textbf{Execution Runtime:} API invocation, protocol translation, error handling (the ``data plane'')
+\end{itemize}
+
+\textbf{Complementary Focus:} The Execution Layer paper describes the \textit{runtime component}---how capabilities are invoked, translated, and normalized. This paper describes the \textit{contact component}---how routing decisions are made, policies evaluated, and providers selected.
+
+Together, they form the complete Action Layer: one handles the mechanics of execution, the other handles the logic of routing.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of Execution Layer and Contact Layer Papers}
+\begin{tabular}{lll}
+\toprule
+\textbf{Aspect} & \textbf{Execution Layer Paper~\cite{wang2026execution}} & \textbf{Contact Layer Paper (This Work)} \\
+\midrule
+Focus & Runtime mechanics & Conceptual framework \\
+Question & How to execute? & Why mediate? \\
+Component & Execution Runtime & Contact Layer \\
+Layer & Data plane & Control plane \\
+Key Constraint & Minimality & Intelligence-Action separation \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Contributions}
+The primary contributions are as follows:
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Conceptual Framework:} We define the Contact Layer as the interface between AI intelligence and the external world, distinguishing it from both cognitive processes and execution mechanisms.
+
+\item \textbf{Theoretical Foundation:} We establish the Intelligence-Action distinction as a fundamental principle of AI-native system design.
+
+\item \textbf{Architectural Integration:} We demonstrate how the Contact Layer relates to execution runtimes and orchestration systems, clarifying terminology boundaries.
+
+\item \textbf{Practical Implications:} We show how this conceptual framework informs the design of capability-mediated AI systems.
+\end{enumerate}

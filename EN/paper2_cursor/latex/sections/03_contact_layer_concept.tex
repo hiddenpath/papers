@@ -1,0 +1,81 @@
+%=============================================================================
+% Section 3: The Contact Layer Concept
+%=============================================================================
+\section{The Contact Layer Concept}
+
+\subsection{Definition}
+
+\textbf{The Contact Layer is the interface between AI intelligence and the external world.}
+
+The external world includes:
+\begin{itemize}[leftmargin=*]
+\item AI capabilities (models, embeddings, generation)
+\item Digital services (APIs, databases, automation platforms)
+\item Knowledge systems (search, retrieval, knowledge bases)
+\item Physical devices (IoT, robotics, sensors, actuators)
+\end{itemize}
+
+The contact layer transforms internal decisions into executable actions.
+
+\begin{definition}
+The Contact Layer is defined as a tuple:
+\[
+\text{CL} = (C, \text{Policy}, \text{Context})
+\]
+Where:
+\begin{itemize}[leftmargin=*]
+\item $C$: Set of available capabilities $C = \{c_1, c_2, \ldots, c_n\}$
+\item Policy: Function $\text{Policy}(c, \text{ctx}) \to (\text{provider}, \text{constraints})$
+\item Context: Execution context including preferences, constraints, history
+\end{itemize}
+The Contact Layer maps agent intent to capability execution:
+\[
+\text{Route}: \text{Intent} \times \text{Context} \to \text{Capability} \times \text{Provider} \times \text{Constraints}
+\]
+\end{definition}
+
+\subsection{Core Functions}
+
+The contact layer performs several essential functions:
+
+\textbf{1. Capability Mediation:} Translating agent intent into capability invocations. When an agent decides to ``search for information,'' the contact layer determines which capability to invoke and with what parameters.
+
+\textbf{2. Provider Abstraction:} Shielding agents from provider-specific details. Agents need not know whether search is performed by Provider A or Provider B---they express capability requirements, and the contact layer handles provider selection.
+
+\textbf{2.1 Policy Evaluation Performance:} Policy evaluation can become a bottleneck under high concurrency if complex routing rules are evaluated for each request. The architecture addresses this through:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Synchronous vs. Asynchronous Decisions:} Simple routing decisions (based on static policies or cached preferences) are made synchronously with minimal latency. Complex decisions (requiring real-time cost optimization or policy negotiation) may be processed asynchronously, with fallback to cached decisions.
+\item \textbf{Policy Caching:} Frequently evaluated policy decisions are cached. For example, routing preferences for common capability-provider combinations can be cached and refreshed periodically rather than re-evaluated per-request.
+\item \textbf{Decision Precomputation:} For predictable workloads, routing decisions can be precomputed based on historical patterns and updated via background processes.
+\item \textbf{Performance Budget:} The contact layer enforces a maximum decision latency (e.g., 10ms) for synchronous routing. If policy evaluation exceeds this budget, cached or default routing is used.
+\end{itemize}
+
+\textbf{3. Action Sequencing:} Coordinating multiple capabilities into coherent action sequences. Complex tasks require multiple capabilities executed in specific orders, which the contact layer orchestrates.
+
+\textbf{4. Failure Policy Evaluation:} Determining the appropriate response to capability failures. When a capability fails, the contact layer evaluates organizational policies to decide whether to retry, select an alternative provider, or report failure to the agent. The actual retry execution and error handling mechanics are performed by the Execution Runtime~\cite{wang2026execution}.
+
+\textbf{5. Context Management:} Coordinating state persistence across capability invocations. Multi-step tasks require context persistence, which the contact layer orchestrates through coordination rules. The state storage and retrieval mechanics are handled by external session stores or the Execution Runtime, maintaining the contact layer's stateless design.
+
+\textbf{5.1 State Architecture:} The contact layer coordinates state management but does not store state itself, preserving horizontal scalability. The architecture supports multiple state strategies:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Session State Store:} For multi-turn conversations, state is typically stored in a dedicated session store (e.g., Redis, in-memory cache) referenced by session ID. The contact layer reads from and writes to this store.
+\item \textbf{Stateless Operation:} For single-invocation scenarios, no state persistence is required. Each capability call is independent.
+\item \textbf{Agent-Managed State:} In some architectures, the agent maintains its own state and passes relevant context with each request. The contact layer merely transports this context.
+\end{itemize}
+
+\textbf{Horizontal Scalability:} To maintain horizontal scalability, the contact layer itself remains stateless---it does not maintain in-memory session state. Instead, session identifiers are passed with each request, state is persisted to external stores, and any contact layer instance can handle any request for the same session. This separation of state coordination (contact layer) from state storage (external store) enables elastic scaling while supporting multi-step workflows.
+
+\subsection{Capabilities as the Language of Interaction}
+
+Within the contact layer, the fundamental abstraction is the \textbf{capability}. A capability represents a structured action that an AI system can invoke.
+
+Examples of capabilities include: \texttt{generate\_text}, \texttt{search\_web}, \texttt{send\_email}, \texttt{translate\_text}, \texttt{create\_image}, \texttt{query\_database}, and \texttt{control\_device}.
+
+Each capability defines:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Inputs:} Structured input parameters
+\item \textbf{Outputs:} Structured output format
+\item \textbf{Execution Semantics:} How the capability is performed
+\end{itemize}
+
+Capabilities serve as the \textbf{operational vocabulary} through which AI systems interact with the world.

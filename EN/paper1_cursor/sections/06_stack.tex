@@ -1,93 +1,121 @@
-\section{Execution Layer Position in the AI-Native Stack}
-\label{sec:stack}
+%=============================================================================
+% Section 6: Execution Layer Position in AI Native Stack
+%=============================================================================
+\section{Execution Layer Position in AI Native Stack}
 
 \subsection{Five-Layer Architecture}
 
-The execution layer sits within a broader AI-Native implementation stack. In the final arXiv bundle, the stack overview will be supplied as a dedicated vector figure. The current conversion pass embeds a LaTeX-native schematic to preserve semantics and compile without external graphics.
+The execution layer sits within a broader AI Native implementation stack:
 
-\begin{figure}[t]
+%-----------------------------------------------------------------------------
+% Figure 2: Five-Layer Architecture
+%-----------------------------------------------------------------------------
+\begin{figure}[htbp]
 \centering
-\fbox{%
-\begin{minipage}{0.88\linewidth}
-\centering
-\vspace{0.6em}
-\fbox{\parbox{0.82\linewidth}{\centering \textbf{User Interface}}}
+\begin{tikzpicture}[
+    layerbox/.style={
+        draw,
+        rectangle,
+        minimum width=8.5cm,
+        minimum height=0.75cm,
+        align=center,
+        font=\small
+    },
+    subbox/.style={
+        draw,
+        rectangle,
+        minimum width=7cm,
+        minimum height=0.65cm,
+        align=center,
+        font=\footnotesize
+    },
+    annot/.style={
+        font=\footnotesize,
+        text=gray!70!black
+    },
+    arrow/.style={
+        -{Stealth[length=2.5mm, width=1.8mm]},
+        thick,
+        gray!60!black
+    }
+]
 
-\vspace{0.8em}
-$\downarrow$
+% User Interface
+\node[layerbox, fill=gray!12] (ui) at (0, 7) {User Interface};
 
-\vspace{0.8em}
-\fbox{\parbox{0.82\linewidth}{\centering \textbf{AI-Native Applications}\\(Agents, Workflows, Applications)}}
+\draw[arrow] (0, 6.5) -- (0, 6.1);
 
-\vspace{0.8em}
-$\downarrow$
+% AI Native Applications
+\node[layerbox, fill=blue!8] (apps) at (0, 5.5) {AI Native Applications};
+\node[annot] at (0, 4.9) {(Agents, Workflows, Apps)};
 
-\vspace{0.8em}
-\fbox{\parbox{0.82\linewidth}{\centering \textbf{AI Cognition Layer}\\(LLMs, Reasoning, Planning)}}
+\draw[arrow] (0, 4.5) -- (0, 4.1);
 
-\vspace{0.8em}
-$\downarrow$
+% AI Cognition Layer
+\node[layerbox, fill=green!8] (cog) at (0, 3.5) {AI Cognition Layer};
+\node[annot] at (0, 2.9) {(LLMs, Reasoning, Planning)};
 
-\vspace{0.8em}
-\fbox{\parbox{0.82\linewidth}{\centering \textbf{AI Action Layer}\\
-\vspace{0.4em}
-\fbox{\parbox{0.66\linewidth}{\centering Orchestration / Policy}}
-\\[0.4em]
-$\downarrow$
-\\[0.4em]
-\fbox{\parbox{0.66\linewidth}{\centering Execution Runtime}}}}
+\draw[arrow] (0, 2.5) -- (0, 2.1);
 
-\vspace{0.8em}
-$\downarrow$
+% AI Action Layer (container)
+\node[draw, rectangle, minimum width=8.5cm, minimum height=2.8cm, fill=yellow!6] (action) at (0, 0.3) {};
+\node[font=\small\bfseries, anchor=north west] at (-3.8, 1.6) {AI Action Layer};
 
-\vspace{0.8em}
-\fbox{\parbox{0.82\linewidth}{\centering \textbf{Capability Ecosystem}\\(Models, APIs, Tools, Devices)}}
+% Orchestration/Policy subbox
+\node[subbox, fill=green!12] (orch) at (0, 0.9) {Orchestration/Policy};
 
-\vspace{0.8em}
-$\downarrow$
+\draw[arrow] (0, 0.45) -- (0, 0.05);
 
-\vspace{0.8em}
-\fbox{\parbox{0.82\linewidth}{\centering \textbf{Infrastructure}\\(Cloud, Edge, Networks)}}
-\vspace{0.6em}
-\end{minipage}}
-\caption{Five-layer AI-Native implementation stack with the action layer decomposed into orchestration and execution.}
-\label{fig:five-layer-stack}
+% Execution Runtime subbox
+\node[subbox, fill=orange!18] (exec) at (0, -0.6) {Execution Runtime};
+
+\draw[arrow] (0, -1.1) -- (0, -1.5);
+
+% Capability Ecosystem
+\node[layerbox, fill=purple!8] (cap) at (0, -2.1) {Capability Ecosystem};
+\node[annot] at (0, -2.75) {(Models, APIs, Tools, Devices)};
+
+\draw[arrow] (0, -3.1) -- (0, -3.5);
+
+% Infrastructure
+\node[layerbox, fill=gray!15] (infra) at (0, -4.1) {Infrastructure};
+\node[annot] at (0, -4.75) {(Cloud, Edge, Networks)};
+
+\end{tikzpicture}
+\caption{Five-layer AI Native implementation stack showing the position of the AI Execution Layer within the broader architecture.}
+\label{fig:five-layer}
 \end{figure}
 
 \subsection{Action Layer Decomposition}
 
-A critical insight is that the action layer comprises two subcomponents:
+A critical insight is that the Action Layer comprises two subcomponents:
 
-\paragraph{Orchestration component.}
-The orchestration component is responsible for capability routing, provider selection, policy evaluation, and environment selection.
+\textbf{Contact Layer (Routing/Policy):}
+\begin{itemize}
+    \item Capability routing
+    \item Provider selection
+    \item Policy evaluation
+    \item Environment selection
+\end{itemize}
 
-\paragraph{Execution component.}
-The execution component is responsible for API invocation, tool execution, error handling, and result normalization.
+\textbf{Execution Runtime (Invocation):}
+\begin{itemize}
+    \item API invocation
+    \item Tool execution
+    \item Error handling
+    \item Result normalization
+\end{itemize}
 
-This decomposition maintains clear separation of concerns. The orchestration layer makes decisions, such as which provider or environment to use, while the execution layer performs actions, such as invoking APIs and returning normalized results.
+This decomposition maintains clear separation of concerns. The Contact Layer makes \emph{decisions} (which provider, which environment), while the execution runtime performs \emph{actions} (invoke API, return result).
 
-When mapped to the logical model in \cref{eq:logical-model}, the orchestration component corresponds to $P$, and the execution runtime corresponds to $E$.
-
-\begin{table}[t]
-\caption{Mapping between the logical model and the implementation stack.}
-\label{tab:logical-vs-implementation}
-\centering
-\small
-\begin{tabularx}{\linewidth}{@{} l l X @{}}
-\toprule
-Logical element & Implementation mapping & Responsibility \\
-\midrule
-$A$ & AI Cognition Layer & Reasoning, planning, memory, and task decomposition. \\
-$P$ & Policy Orchestration Layer & Routing, provider selection, policy evaluation, and workflow control. \\
-$E$ & Execution Runtime & Deterministic capability invocation, protocol translation, result normalization, and execution telemetry forwarding. \\
-\bottomrule
-\end{tabularx}
-\end{table}
+When mapped to the logical model $S = (A, P, E)$, the Contact Layer corresponds to $P$, and the Execution Runtime corresponds to $E$.
 
 \subsection{Defining Statement}
+
+The execution layer is defined as follows:
 
 \begin{quote}
 \emph{The execution layer is the action interface between AI cognition and the real-world capability ecosystem.}
 \end{quote}
 
-This definition captures the essential role of the layer: mediating between what agents decide to do and how those decisions are realized through capability execution.
+This definition captures the essential role: mediating between what agents decide to do and how those decisions are realized through capability execution.

@@ -1,0 +1,73 @@
+%=============================================================================
+% Section 10: Relationship to AI Native Stack
+%=============================================================================
+\section{Relationship to AI Native Stack}
+
+\subsection{Position in the Stack}
+
+The contact layer sits within a broader AI Native Stack:
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  layerbox/.style={
+    draw, rectangle, minimum width=9cm, minimum height=0.7cm, align=center, font=\small
+  },
+  layerbox_tall/.style={
+    draw, rectangle, minimum width=9cm, minimum height=1.8cm, align=left, font=\small
+  },
+  annot/.style={
+    font=\footnotesize, text=gray!70!black
+  },
+  arrow/.style={
+    -{Stealth[length=3mm, width=2mm]}, thick, gray!60!black
+  }
+]
+% User Interface
+\node[layerbox, fill=gray!8] (ui) at (0, 7) {User Interface (Web, Mobile, Voice, CLI)};
+\draw[arrow] (0, 6.5) -- (0, 6);
+
+% AI Native Applications
+\node[layerbox, fill=blue!8] (app) at (0, 5.5) {AI Native Applications};
+\node[annot] at (0, 5.1) {(Agents, Workflows, Services)};
+\draw[arrow] (0, 4.7) -- (0, 4.2);
+
+% AI Cognition Layer
+\node[layerbox, fill=blue!12] (cog) at (0, 3.7) {AI Cognition Layer};
+\node[annot] at (0, 3.3) {(Models, Reasoning, Planning)};
+\draw[arrow] (0, 2.9) -- (0, 2.4);
+
+% AI Action Layer (tall)
+\node[layerbox_tall, fill=green!8] (action) at (0, 0.5) {};
+\node[font=\small\bfseries] at (0, 1.9) {AI Action Layer};
+
+% Contact Layer sub-box
+\node[draw, rectangle, minimum width=4cm, minimum height=0.5cm, fill=green!15, font=\footnotesize] at (-1.8, 1.1) {Contact Layer};
+\node[font=\tiny, text=gray!70!black] at (-1.8, 0.7) {(Routing, Policy)};
+
+% Execution Runtime sub-box
+\node[draw, rectangle, minimum width=4cm, minimum height=0.5cm, fill=orange!15, font=\footnotesize] at (1.8, 1.1) {Execution Runtime};
+\node[font=\tiny, text=gray!70!black] at (1.8, 0.7) {(Invocation, Execution)};
+
+\draw[arrow] (0, -0.5) -- (0, -1);
+
+% Capability Ecosystem
+\node[layerbox, fill=orange!8] (cap) at (0, -1.5) {Capability Ecosystem};
+\node[annot] at (0, -1.9) {(Models, APIs, Tools, Devices)};
+\draw[arrow] (0, -2.3) -- (0, -2.8);
+
+% Infrastructure
+\node[layerbox, fill=gray!8] (infra) at (0, -3.3) {Infrastructure (Cloud, Edge, Networks)};
+\end{tikzpicture}
+\caption{AI Native Stack with Contact Layer}
+\end{figure}
+
+\subsection{Conceptual Unity}
+
+The action layer represents the conceptual unity of the contact layer (routing) and execution runtime (execution). While architecturally decomposed, they form a single coherent layer:
+
+\textbf{Conceptual View:} AI Action Layer as the interface between cognition and capabilities.
+
+\textbf{Architectural View:} Action Layer decomposed into Contact (routing) and Execution (invocation) components.
+
+Both views are correct---they represent different levels of abstraction appropriate for different purposes.

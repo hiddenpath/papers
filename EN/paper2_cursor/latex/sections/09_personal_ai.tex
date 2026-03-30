@@ -1,0 +1,111 @@
+%=============================================================================
+% Section 9: Personal AI Infrastructure
+%=============================================================================
+\section{Personal AI Infrastructure}
+
+\subsection{Concept}
+
+One important consequence of the contact layer concept is the emergence of \textbf{personal AI infrastructure}. A user may operate a local contact layer that connects:
+\begin{itemize}[leftmargin=*]
+\item Local AI models (on-device processing, privacy-preserving)
+\item Personal data sources (files, emails, calendars)
+\item Home automation systems (smart home, IoT)
+\item Cloud AI capabilities (when local resources insufficient)
+\end{itemize}
+
+This creates a \textbf{unified interaction environment} in which AI systems act on behalf of users across digital and physical domains.
+
+\subsection{Architecture}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  layerbox/.style={
+    draw, rectangle, minimum width=7cm, minimum height=0.7cm, align=center, font=\small
+  },
+  smallbox/.style={
+    draw, rectangle, minimum width=1.5cm, minimum height=0.6cm, align=center, font=\footnotesize
+  },
+  arrow/.style={
+    -{Stealth[length=2mm, width=1.5mm]}, thick, gray!60!black
+  }
+]
+% Personal AI Agent
+\node[layerbox, fill=blue!8] (agent) at (0, 3) {Personal AI Agent};
+
+% Contact Layer
+\node[layerbox, fill=green!8, minimum height=1.2cm] (contact) at (0, 1.5) {};
+\node[font=\small\bfseries] at (0, 1.7) {Personal Contact Layer};
+\node[font=\footnotesize, text=gray!70!black] at (0, 1.2) {Routes to: Local models, Home automation, Cloud AI};
+
+% Arrows to boxes
+\draw[arrow] (0, 0.8) -- (-2.5, 0);
+\draw[arrow] (0, 0.8) -- (0, 0);
+\draw[arrow] (0, 0.8) -- (2.5, 0);
+
+% Three boxes at bottom
+\node[smallbox, fill=orange!8] (local) at (-2.5, -0.3) {Local Models};
+\node[smallbox, fill=yellow!8] (home) at (0, -0.3) {Home Auto};
+\node[smallbox, fill=purple!8] (cloud) at (2.5, -0.3) {Cloud AI};
+
+\draw[arrow] (agent) -- (contact);
+\end{tikzpicture}
+\caption{Personal AI Infrastructure Architecture}
+\end{figure}
+
+\subsection{Deployment Scenarios}
+
+Personal AI infrastructure can operate on:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Personal Devices:} Smartphones, tablets, laptops
+\item \textbf{Home Servers:} Dedicated hardware for home AI
+\item \textbf{Edge Gateways:} Industrial or commercial edge deployments
+\item \textbf{Embedded Systems:} Automotive, aerospace, healthcare
+\end{itemize}
+
+The contact layer architecture enables consistent capability access across these deployment scenarios.
+
+\subsection{Personal AI Use Case: Smart Home + Email}
+
+The following sequence illustrates a personal AI scenario where the contact layer dynamically routes between local and cloud capabilities:
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  actor/.style={draw, rectangle, minimum width=1.5cm, minimum height=0.5cm, align=center, font=\scriptsize},
+  arrow/.style={-{Stealth[length=2mm]}, thick},
+  label/.style={font=\scriptsize}
+]
+% Actors
+\node[actor, fill=blue!10] (user) at (0, 4) {User};
+\node[actor, fill=blue!10] (agent) at (2.5, 4) {Agent};
+\node[actor, fill=green!10] (contact) at (5, 4) {Contact};
+\node[actor, fill=orange!10] (home) at (7.5, 4) {Home};
+\node[actor, fill=purple!10] (cloud) at (10, 4) {Cloud};
+
+% Lifelines
+\draw[dashed, gray] (user.south) -- (0, 0);
+\draw[dashed, gray] (agent.south) -- (2.5, 0);
+\draw[dashed, gray] (contact.south) -- (5, 0);
+\draw[dashed, gray] (home.south) -- (7.5, 0);
+\draw[dashed, gray] (cloud.south) -- (10, 0);
+
+% Messages
+\draw[arrow] (0.1, 3.5) -- node[above, label] {request} (2.4, 3.5);
+\draw[arrow] (2.6, 3) -- node[above, label] {parse} (4.9, 3);
+\draw[arrow] (5.1, 2.5) -- node[above, label] {control} (7.4, 2.5);
+\draw[arrow] (7.6, 2) -- node[above, label] {result} (5.1, 2);
+\draw[arrow] (5.1, 1.5) -- node[above, label] {summarize} (9.9, 1.5);
+\draw[arrow] (10.1, 1) -- node[above, label] {summary} (5.1, 1);
+\draw[arrow] (2.6, 0.5) -- node[above, label] {response} (0.1, 0.5);
+\end{tikzpicture}
+\caption{Personal AI Sequence: Smart Home + Email}
+\end{figure}
+
+\textbf{Key Architecture Points:}
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Local-First Routing:} Device control routes to local automation (low latency, privacy, offline-capable)
+\item \textbf{Cloud Fallback:} Email summarization routes to cloud AI (more powerful, needs data access)
+\item \textbf{Unified Interface:} Both requests use the same capability interface despite different execution environments
+\item \textbf{Context Preservation:} The contact layer maintains request context across parallel invocations
+\end{enumerate}

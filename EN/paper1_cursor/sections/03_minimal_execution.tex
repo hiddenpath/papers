@@ -1,63 +1,106 @@
+%=============================================================================
+% Section 3: Why Minimal Execution Matters
+%=============================================================================
 \section{Why Minimal Execution Matters}
-\label{sec:minimal-execution}
 
-Minimality is treated as a system constraint rather than a stylistic preference. Embedding policy logic into the execution runtime introduces state coupling, reduces portability, and increases cross-layer failure propagation.
+Minimality is treated as a system constraint rather than a stylistic preference. Embedding policy logic into the execution runtime introduces state coupling, reduces portability, and increases cross-layer failure propagation. Minimality is therefore defined as follows:
 
-\begin{definition}[Minimality Constraint]
-\label{def:minimality-constraint}
-The execution layer \textbf{must} implement deterministic capability invocation only, and \textbf{must not} perform policy-driven decisions such as provider selection, strategic retry, or workflow-level fallback.
-\end{definition}
+\begin{quote}
+\textbf{Minimality Constraint:} The execution layer MUST implement deterministic capability invocation only, and MUST NOT perform policy-driven decisions such as provider selection, strategic retry, or workflow-level fallback.
+\end{quote}
 
 Under this constraint, runtime semantics are specified through core responsibilities and explicit non-responsibilities.
 
 \subsection{Core Responsibilities}
-\label{subsec:core-responsibilities}
 
 The runtime serves as a standardized capability execution engine. Its responsibilities are intentionally limited to six core functions:
 
-\begin{enumerate}
-    \item \textbf{Capability Invocation:} execute a capability defined in the AI Protocol. The runtime receives standardized capability requests and invokes the appropriate execution path.
-    \item \textbf{Protocol Translation:} convert protocol-level requests into provider-specific API calls. This translation layer enables applications to work with standardized capability definitions while the runtime handles provider-specific implementations.
-    \item \textbf{Result Normalization:} return standardized responses to the caller. Regardless of which provider executed the capability, the runtime normalizes results into a consistent format.
-    \item \textbf{Connection Handling:} manage network communication with providers, including connection pooling, timeout management, and network-level error handling.
-    \item \textbf{Error Propagation:} report execution errors without implementing application-level retry strategies. The runtime distinguishes between execution errors, which it reports, and retry logic, which belongs in the orchestration layer.
-    \item \textbf{Session Transport:} forward session context without interpreting application policy. The runtime transports contextual information required for capability execution but does not interpret or modify policy decisions.
-\end{enumerate}
+\textbf{1. Capability Invocation:} Execute a capability defined in the AI Protocol. The runtime receives standardized capability requests and invokes the appropriate execution path.
 
-\paragraph{Optional bounded micro-retry semantics.}
-For transient network failures such as connection timeouts or HTTP 429 rate limits, the runtime may implement limited micro-retries---typically one or two immediate retries with exponential backoff at the network layer. This differs from application-level retry strategies in that micro-retries are bounded and automatic, address only transient network failures, do not implement policy-driven retry logic such as provider fallback, and must remain within the overall execution timeout budget.
+\textbf{2. Protocol Translation:} Convert protocol-level requests into provider-specific API calls. This translation layer enables applications to work with standardized capability definitions while the runtime handles provider-specific implementations.
+
+\textbf{3. Result Normalization:} Return standardized responses to the caller. Regardless of which provider executed the capability, the runtime normalizes results into a consistent format.
+
+\textbf{4. Connection Handling:} Manage network communication with providers. This includes connection pooling, timeout management, and network-level error handling.
+
+\textbf{5. Error Propagation:} Report execution errors without implementing application-level retry strategies. The runtime distinguishes between execution errors (which it reports) and retry logic (which belongs in the orchestration layer).
+
+\textbf{5.1. Bounded Retry Semantics (Optional):} For transient network failures (e.g., connection timeouts, 429 rate limits), the runtime MAY implement limited micro-retries---typically 1--2 immediate retries with exponential backoff at the network layer. This differs from application-level retry strategies in that:
+\begin{itemize}
+    \item Micro-retries are bounded and automatic
+    \item They address only transient network-level failures
+    \item They do not implement policy-driven retry logic (e.g., provider fallback)
+    \item Total retry duration must remain within the execution timeout budget
+\end{itemize}
 
 This choice reflects production constraints: transient network failures are common, and surfacing every transient event to the orchestration layer introduces avoidable latency and cross-layer communication overhead.
 
-\subsection{What the Runtime Does Not Do}
-\label{subsec:runtime-non-responsibilities}
+\textbf{6. Session Transport:} Forward session context without interpreting application policy. The runtime transports contextual information required for capability execution but does not interpret or modify policy decisions.
+
+\subsection{What the Runtime Does NOT Do}
 
 To maintain its minimal design, the runtime explicitly avoids:
-
 \begin{itemize}
-    \item \textbf{Agent Planning:} deciding what sequence of capabilities to invoke.
-    \item \textbf{Workflow Orchestration:} managing complex multi-capability workflows.
-    \item \textbf{Application Logic:} implementing application-specific business logic.
-    \item \textbf{Provider Selection:} choosing which provider should execute a capability.
-    \item \textbf{Routing Policies:} implementing cost optimization or latency-based routing.
-    \item \textbf{Application-Level Retry Strategies:} determining when and how to retry failed executions across providers or workflows.
+    \item \textbf{Agent Planning:} Deciding what sequence of capabilities to invoke
+    \item \textbf{Workflow Orchestration:} Managing complex multi-capability workflows
+    \item \textbf{Application Logic:} Implementing business logic specific to applications
+    \item \textbf{Provider Selection:} Choosing which provider should execute a capability
+    \item \textbf{Routing Policies:} Implementing cost optimization or latency-based routing
+    \item \textbf{Application-Level Retry Strategies:} Determining when and how to retry failed executions across providers or workflows
 \end{itemize}
 
 These responsibilities belong in the orchestration and agent layers, maintaining clear separation of concerns.
 
-\begin{table}[t]
-\caption{Execution-runtime responsibilities and explicit exclusions.}
-\label{tab:runtime-boundary}
-\centering
-\small
-\begin{tabularx}{\linewidth}{@{} l X X @{}}
-\toprule
-Category & Included in the execution runtime & Explicitly excluded from the execution runtime \\
-\midrule
-Invocation path & Capability invocation, protocol translation, connection handling, and result normalization & Capability planning and multi-step workflow design \\
-Failure handling & Error propagation and bounded network-level micro-retries & Provider fallback and orchestration-level retry policy \\
-Context handling & Session-context transport and execution metadata emission & Business-policy interpretation and application-specific logic \\
-Selection logic & Deterministic execution of the supplied request & Provider selection, routing optimization, and policy evaluation \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\subsection{Stateless Execution Design}
+
+The runtime operates as a stateless execution engine. Each capability invocation is independent, with any necessary state maintained by the calling agent or orchestration layer. This design enables:
+\begin{itemize}
+    \item \textbf{Horizontal Scalability:} Multiple runtime instances can be deployed without state synchronization
+    \item \textbf{Simplified Debugging:} Each execution is self-contained and traceable
+    \item \textbf{Fault Isolation:} Failures in one execution do not affect others
+\end{itemize}
+
+\subsection{Asynchronous and Long-Running Tasks}
+
+Modern AI capabilities extend beyond synchronous text generation to include long-running tasks such as video generation, large-scale search indexing, and multi-step document processing. The execution layer accommodates these patterns while maintaining its minimal design:
+
+\textbf{Streaming Responses:} For capabilities supporting Server-Sent Events (SSE) or WebSocket connections, the runtime:
+\begin{itemize}
+    \item Establishes the streaming connection on behalf of the caller
+    \item Forwards stream chunks without buffering the entire response
+    \item Reports stream errors immediately without buffering delays
+    \item Allows the orchestration layer to handle stream cancellation
+\end{itemize}
+
+\textbf{Polling-Based APIs:} For asynchronous capabilities that return job IDs, the runtime:
+\begin{itemize}
+    \item Executes the initial API call and returns the job identifier
+    \item Delegates polling logic to the orchestration layer (which has policy context)
+    \item Provides a separate \texttt{check\_status} operation for poll queries
+    \item Does not implement automatic polling or status change notifications
+\end{itemize}
+
+\textbf{Design Rationale:} By keeping long-running task state management in the orchestration layer, the runtime remains stateless and does not require background job tracking mechanisms. This preserves horizontal scalability and simplifies fault recovery.
+
+\subsection{Security Considerations}
+
+As the action interface between AI cognition and external capabilities, the execution layer occupies a critical position in the security model. While the runtime intentionally avoids business logic, it should implement baseline security measures:
+
+\textbf{Input Validation:} The runtime validates capability requests against the protocol schema before execution. All \texttt{input\_schema} definitions MUST conform to JSON Schema 2020-12 or later, ensuring interoperability and standardized validation across implementations. The runtime performs schema validation at invocation time, catching structural errors before they reach providers.
+
+\textbf{PII Handling (Optional):} Organizations may configure PII stripping or redaction at the runtime layer. This serves as a defense-in-depth measure against prompt injection attacks that attempt to exfiltrate sensitive data. However, this is a configurable option---primary PII protection remains the responsibility of the agent and application layers.
+
+\textbf{Rate Limiting:} The runtime may implement local rate limiting to prevent runaway capability invocations, protecting both the runtime infrastructure and downstream providers.
+
+\textbf{Audit Logging:} All capability invocations should be logged for security auditing, including the capability name, provider, timestamp, and execution status (success/failure).
+
+To enable observability for the orchestration layer, the runtime SHOULD include the following metrics in standardized response metadata:
+\begin{itemize}
+    \item \texttt{retry\_count}: Number of micro-retries performed during execution (if applicable)
+    \item \texttt{translation\_latency\_ms}: Time spent in protocol translation
+    \item \texttt{execution\_latency\_ms}: Time spent in actual provider API call
+\end{itemize}
+
+These metrics allow the Contact Layer to assess provider stability and make informed routing decisions.
+
+\textbf{Security Boundary:} The execution layer is not a security perimeter. It operates within a trusted environment where the orchestration layer has already authenticated the agent and authorized the capability request. The runtime's security role is defense-in-depth, not primary access control.

@@ -1,67 +1,108 @@
+%=============================================================================
+% Section 1: Introduction
+%=============================================================================
 \section{Introduction}
 
 \subsection{The Integration Challenge}
 
-AI applications increasingly depend on heterogeneous capabilities provided by model vendors, external services, and local devices. Providers such as OpenAI~\cite{openai_docs}, Anthropic~\cite{anthropic_docs}, Google, and DeepSeek expose powerful models through APIs, but direct integration introduces tight coupling and escalating system complexity.
+AI applications increasingly depend on heterogeneous capabilities provided by model vendors, external services, and local devices. Providers such as OpenAI~\cite{openai2023}, Anthropic~\cite{anthropic2024}, Google, and DeepSeek expose powerful models through APIs, but direct integration introduces tight coupling and escalating system complexity.
 
-Most current AI frameworks address this challenge through application-level orchestration (e.g., LangChain~\cite{langchain_docs}). Although this approach improves development velocity, it frequently combines orchestration policy and execution mechanics in one runtime, thereby increasing lock-in and reducing component reusability.
+Most current AI frameworks address this challenge through application-level orchestration (e.g., LangChain~\cite{langchain2024}). Although this approach improves development velocity, it frequently combines orchestration policy and execution mechanics in one runtime, thereby increasing lock-in and reducing component reusability.
 
 \subsection{The Missing Layer}
 
 The ecosystem still lacks a minimal execution layer dedicated to capability invocation. Such a layer should:
-\begin{enumerate}
-\item Execute capabilities defined by standardized protocols.
-\item Translate protocol requests into provider-specific API calls.
-\item Normalize results into standardized responses.
-\item Handle execution errors without implementing application-level retry strategies.
+\begin{enumerate}[label=\arabic*.]
+    \item Execute capabilities defined by standardized protocols
+    \item Translate protocol requests into provider-specific API calls
+    \item Normalize results into standardized responses
+    \item Handle execution errors without implementing application-level retry strategies
 \end{enumerate}
+
 This layer excludes higher-level concerns such as planning, workflow orchestration, and application logic, thereby preserving a lightweight and reusable execution boundary.
 
 \subsection{Contributions}
 
 The primary contributions are as follows:
-\begin{enumerate}
-\item \textbf{Formal Architectural Model:} A three-layer logical model $S = (A, P, E)$ is specified to separate cognition, orchestration, and execution with explicit layer responsibilities.
-\item \textbf{Minimal Runtime Constraint:} Minimality is formalized as a verifiable design constraint, with explicit runtime responsibilities and non-responsibilities for deterministic capability execution.
-\item \textbf{Unified Capability Semantics:} Capability is formalized as $C = (I, O, \Sigma, Q, \Pi)$, enabling technical invocation and economic observability to share a single schema-level object.
-\item \textbf{Cross-Layer Integration:} The three-layer logical model is mapped to the five-layer AI-Native implementation stack, clarifying how execution-layer invariants are preserved in full-system deployments.
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Formal Architectural Model:} A three-layer logical model $S = (A, P, E)$ is specified to separate cognition, orchestration, and execution with explicit layer responsibilities.
+    \item \textbf{Minimal Runtime Constraint:} Minimality is formalized as a verifiable design constraint, with explicit runtime responsibilities and non-responsibilities for deterministic capability execution.
+    \item \textbf{Unified Capability Semantics:} Capability is formalized as $C = (I, O, \Sigma, Q, P)$, enabling technical invocation and economic observability to share a single schema-level object.
+    \item \textbf{Cross-Layer Integration:} The three-layer logical model is mapped to the five-layer AI-Native implementation stack, clarifying how execution-layer invariants are preserved in full-system deployments.
 \end{enumerate}
 
-The execution layer is then positioned within the broader AI-Native architecture developed in later sections. Figure~\ref{fig:layered-architecture-overview} summarizes the layered boundary, while later figures refine the implementation stack and execution flows.
+The execution layer is then positioned within the broader five-layer AI-Native Architecture developed in later sections.
 
-\begin{figure}[t]
+%-----------------------------------------------------------------------------
+% Figure 1: Layered Architecture
+%-----------------------------------------------------------------------------
+\begin{figure}[htbp]
 \centering
-% TikZ figure - requires texlive-pictures
-% If tikz unavailable, this figure will be empty
-\ifx\tikz\undefined
-\textit{[Figure: Layered architecture diagram - requires tikz package]}
-\else
 \begin{tikzpicture}[
- box/.style={
-  draw, rounded corners=2pt, minimum width=10.8cm, minimum height=1.05cm, align=center, font=\small
- },
- boundary/.style={font=\small\itshape},
- >=Latex
+    layerbox/.style={
+        draw,
+        rectangle,
+        minimum width=10cm,
+        minimum height=0.9cm,
+        align=center,
+        font=\small
+    },
+    layerbox tall/.style={
+        draw,
+        rectangle,
+        minimum width=10cm,
+        minimum height=2.2cm,
+        align=center,
+        font=\small
+    },
+    annot/.style={
+        font=\footnotesize,
+        text=gray!70!black
+    },
+    arrow/.style={
+        -{Stealth[length=3mm, width=2mm]},
+        thick,
+        gray!60!black
+    }
 ]
-\node[box, fill=blue!8] (agent) {
- \textbf{Agent Intelligence Layer}\\(Reasoning, Planning, Cognition)
+
+% Agent Intelligence Layer
+\node[layerbox, fill=blue!8] (agent) at (0, 6) {Agent Intelligence Layer};
+\node[annot] at (0, 5.35) {(Reasoning, Planning, Cognition)};
+
+\draw[arrow] (0, 4.9) -- (0, 4.4);
+
+% Contact Layer
+\node[layerbox, fill=green!8] (contact) at (0, 3.8) {Contact Layer};
+\node[annot] at (0, 3.15) {(Routing, Provider Selection, Workflow Control)};
+
+\draw[arrow] (0, 2.7) -- (0, 2.2);
+
+% AI Execution Layer (detailed box)
+\node[layerbox tall, fill=orange!12] (exec) at (0, 0) {};
+\node[font=\small\bfseries] at (0, 0.85) {AI Execution Layer (Runtime)};
+\node[font=\footnotesize, align=left, text=gray!80!black] at (-0.5, 0.0) {
+    \textbullet~Protocol $\rightarrow$ API Translation\\
+    \textbullet~Result Normalization\\
+    \textbullet~Connection Management
 };
-\node[box, fill=green!8, below=0.95cm of agent] (orch) {
- \textbf{Policy Orchestration Layer}\\(Routing, Provider Selection, Workflow Control)
+\node[font=\footnotesize, align=left, text=gray!80!black] at (-0.5, -0.85) {
+    \textbullet~Error Propagation\\
+    \textbullet~Context Forwarding
 };
-\node[box, fill=orange!10, below=0.95cm of orch] (exec) {
- \textbf{AI Execution Layer (Execution Runtime)}\\Protocol-to-API Translation \quad $\bullet$ \quad Result Normalization \quad $\bullet$ \quad Error Propagation
-};
-\node[boundary, below=0.85cm of exec] (boundary) {--- AI Protocol Boundary ---};
-\node[box, fill=purple!8, below=0.85cm of boundary] (prov) {
- \textbf{Capability Providers / Tools / Devices}\\(LLMs, APIs, Databases, External Services, IoT)
-};
-\draw[->, thick] (agent) -- (orch);
-\draw[->, thick] (orch) -- (exec);
-\draw[->, thick] (exec) -- (boundary);
-\draw[->, thick] (boundary) -- (prov);
+
+\draw[arrow] (0, -1.3) -- (0, -1.8);
+
+% Protocol Boundary line
+\node[font=\footnotesize\itshape, text=red!60!black] at (0, -2.1) {--- AI Protocol Boundary ---};
+
+\draw[arrow] (0, -2.4) -- (0, -2.9);
+
+% Capability Providers
+\node[layerbox, fill=purple!8] (providers) at (0, -3.5) {Capability Providers / Tools / Devices};
+\node[annot] at (0, -4.15) {(LLMs, APIs, Databases, External Services, IoT)};
+
 \end{tikzpicture}
-\fi
-\caption{Layered architecture of the AI Execution Layer within AI-Native systems, illustrating the separation between cognition, policy orchestration, and capability execution.}
-\label{fig:layered-architecture-overview}
+\caption{Layered architecture of the AI Execution Layer within AI-native systems, illustrating the separation between cognition, the Contact Layer, and capability execution.}
+\label{fig:architecture}
 \end{figure}

@@ -1,28 +1,78 @@
+%=============================================================================
+% Section 10: Future Directions
+%=============================================================================
 \section{Future Directions}
 
-\subsection{Capability Discovery Protocol}
+\subsection{Near-Term Priorities (6 Months)}
 
-Future work could define a standardized capability discovery protocol enabling dynamic capability registration, capability health monitoring, and automatic capability indexing.
+\textbf{Capability Discovery Protocol.} Future work could define a standardized capability discovery protocol enabling dynamic capability registration, capability health monitoring, and automatic capability indexing.
 
-\subsection{Application Packaging Standard}
-
-A standardized application packaging format would enable portable AI application distribution, standard deployment models, and explicit capability requirement declaration.
-
-\subsection{Capability Marketplace}
-
-As capabilities become standardized, marketplaces may emerge for premium capability offerings, capability quality ratings, and usage-based pricing.
-
-\subsection{Edge Runtime Support}
-
-The execution-layer architecture naturally supports edge-computing scenarios. Runtimes can operate locally on personal devices, home servers, and embedded systems while connecting to local models, local automation systems, and cloud capabilities. This architecture enables personal AI infrastructure, where users operate local runtimes orchestrating personal capabilities.
-
-\subsection{Asynchronous Notification Support}
-
-While the current design relies on polling for long-running tasks, future runtime versions may support callback-based notifications. In this model:
+\textbf{Status.} The ai-lib project has initiated work on this protocol, with draft specifications for:
 \begin{itemize}
-  \item providers register webhook endpoints in their manifests,
-  \item the runtime translates provider-specific callbacks into protocol-standard events, and
-  \item the Policy Orchestration Layer subscribes to capability-completion events rather than polling.
+    \item Provider heartbeat and health reporting
+    \item Capability deprecation notices
+    \item Version negotiation for capability schemas
 \end{itemize}
 
-This extension would reduce connection overhead for high-concurrency scenarios and enable true event-driven capability orchestration.
+\textbf{Benchmark Suite.} A cross-runtime benchmark suite is planned to evaluate:
+\begin{itemize}
+    \item Translation overhead across Rust, Python, TypeScript, and Go runtimes
+    \item Throughput under concurrent synchronous and streaming workloads
+    \item Memory footprint and startup latency comparisons
+\end{itemize}
+
+\subsection{Medium-Term Priorities (12--18 Months)}
+
+\textbf{Application Packaging Standard.} A standardized application packaging format would enable:
+\begin{itemize}
+    \item Portable AI application distribution
+    \item Standard deployment models
+    \item Capability requirement declaration
+\end{itemize}
+
+\textbf{Design Considerations:}
+\begin{itemize}
+    \item Manifest-based capability requirements (similar to package.json or Cargo.toml)
+    \item Container-native packaging for cloud deployment
+    \item Version-pinned capability declarations for reproducibility
+\end{itemize}
+
+\textbf{Edge Runtime Support.} The execution layer architecture naturally supports edge computing scenarios. Runtimes can operate locally on:
+\begin{itemize}
+    \item Personal devices (smartphones, tablets)
+    \item Home servers (NAS devices, personal cloud)
+    \item Embedded systems (IoT gateways, automotive systems)
+\end{itemize}
+
+This architecture enables personal AI infrastructure, where users operate local runtimes orchestrating personal capabilities.
+
+\subsection{Long-Term Vision (18+ Months)}
+
+\textbf{Capability Marketplace.} As capabilities become standardized, marketplaces may emerge for:
+\begin{itemize}
+    \item Premium capability offerings
+    \item Capability quality ratings and reviews
+    \item Usage-based pricing and metering
+\end{itemize}
+
+\textbf{Asynchronous Notification Support.} While the current design relies on polling for long-running tasks, future runtime versions may support callback-based notifications. In this model:
+\begin{itemize}
+    \item Providers register webhook endpoints in their manifests
+    \item The runtime translates provider-specific callbacks into protocol-standard events
+    \item The Contact Layer subscribes to capability completion events rather than polling
+\end{itemize}
+
+This would reduce connection overhead for high-concurrency scenarios and enable true event-driven capability orchestration.
+
+\textbf{Stateless Constraint Clarification.} The runtime itself remains stateless: it acts purely as a protocol translator and forwarder, pushing standardized events to the Contact Layer, which maintains all subscription state and routing policy.
+
+\subsection{Research Agenda}
+
+Beyond engineering priorities, several research questions remain open:
+\begin{enumerate}
+    \item \textbf{Formal Verification.} Can capability contracts be formally verified for provider compliance?
+    \item \textbf{Economic Modeling.} How do pricing models influence routing strategies at the Contact Layer?
+    \item \textbf{Security Boundaries.} What is the minimal trusted computing base for capability execution?
+\end{enumerate}
+
+These questions extend the architectural formalization into formal methods, computational economics, and security domains.

@@ -1,151 +1,134 @@
+%=============================================================================
+% Section 4: Theoretical Foundation: Four Core Principles
+%=============================================================================
 \section{Theoretical Foundation: Four Core Principles}
 
-\subsection{Principle 1: Capability Abstraction}
+\subsection{Principle 1: Capability Abstraction Principle}
 
-\paragraph{Principle.}
-\emph{An AI agent should depend on capabilities rather than concrete providers or APIs.}
+\textbf{Principle:} \emph{An AI agent should depend on capabilities rather than concrete providers or APIs.}
 
-\paragraph{Formal definition.}
-A capability is defined as
-\begin{equation}
-C = (I, O, \Sigma, Q, \Pi)
-\label{eq:capability-tuple}
-\end{equation}
-where:
+\textbf{Formal Definition:} A capability $C$ is defined as:
+\[
+C = (I, O, \Sigma, Q, P)
+\]
+Where:
 \begin{itemize}
-  \item $I$ is the input schema,
-  \item $O$ is the output schema,
-  \item $\Sigma$ is the execution semantics,
-  \item $Q$ is the quality telemetry schema, and
-  \item $\Pi$ is the pricing and billing schema.
+    \item $I$: input schema
+    \item $O$: output schema
+    \item $\Sigma$: execution semantics
+    \item $Q$: quality telemetry schema (e.g., latency, retry\_count, reliability signals)
+    \item $P$: pricing and billing schema (e.g., unit price, billing mode, usage counters)
 \end{itemize}
 
-A provider implements a capability, and agents invoke capabilities through
-\begin{equation}
-\mathrm{Invoke}(C, \mathrm{Input}) \rightarrow \mathrm{Output}.
-\label{eq:invoke}
-\end{equation}
+A Provider $P$ implements Capability $C$. Agents invoke capabilities through:
+\[
+\texttt{Invoke}(C, \texttt{Input}) \rightarrow \texttt{Output}
+\]
+Rather than invoking provider-specific APIs directly.
 
-Rather than invoking provider-specific APIs directly, agents express the executable ability they require. This abstraction enables provider substitution without agent modification, multi-provider capability implementations, and standardized capability discovery and invocation.
+\textbf{Significance:} This principle achieves agent-provider decoupling. Agents express what they need (capabilities) rather than how to obtain it (specific APIs). This abstraction enables:
+\begin{itemize}
+    \item Provider substitution without agent modification
+    \item Multi-provider capability implementations
+    \item Standardized capability discovery and invocation
+\end{itemize}
 
-\begin{table}[t]
-\caption{Comparison between capability and related abstractions.}
-\label{tab:capability-comparison}
-\centering
-\small
-\begin{tabularx}{\linewidth}{@{} l X X @{}}
+\textbf{Distinction from APIs:} It is crucial to understand the fundamental difference:
+
+\begin{center}
+\begin{tabular}{lll}
 \toprule
-Concept & Essence & Role \\
+\textbf{Concept} & \textbf{Essence} & \textbf{Role} \\
 \midrule
 Function & Computation & Algorithmic operation \\
 API & Remote interface & Access mechanism \\
 Tool & Agent-callable function & Invocation interface \\
 \textbf{Capability} & \textbf{Executable ability} & \textbf{Real-world action} \\
 \bottomrule
-\end{tabularx}
-\end{table}
-
-Capabilities represent abilities, whereas APIs represent access mechanisms. This distinction is fundamental to the AI-Native architecture. In this paper's scope, the execution runtime does not optimize $Q$ or $\Pi$; it only measures, normalizes, and forwards these fields for policy decisions in the orchestration layer.
-
-\subsection{Principle 2: Cognition--Action Separation}
-
-\paragraph{Principle.}
-\emph{AI cognition and capability execution should be separated by an action layer.}
-
-\paragraph{Architecture.}
-The architecture can be summarized as:
-\begin{center}
-\begin{tabular}{c}
-Cognition Layer (reasoning, planning, memory) \\
-$\downarrow$ \\
-Action Layer (routing, execution) \\
-$\downarrow$ \\
-Capability Providers
 \end{tabular}
 \end{center}
 
-\paragraph{Rationale.}
-Without this separation, agents must directly call APIs, tools, and services, leading to tight coupling to specific providers, low portability across execution environments, and ecosystem fragmentation. The action layer mediates between cognitive processes that decide what to do and execution processes that perform the action, enabling agents to focus on reasoning while the execution layer handles capability-invocation mechanics.
+Capabilities represent abilities (what can be done), while APIs represent access mechanisms (how to invoke). This distinction is fundamental to the AI Native Architecture.
 
-\subsection{Principle 3: Capability Routing}
+\textbf{Relationship to MCP:} The Model Context Protocol (MCP) defines a model-tool interface, specifying how AI models discover and invoke tools. Capabilities, by contrast, define a runtime-provider interface, specifying how execution runtimes invoke provider implementations. These interfaces are complementary: an execution layer can implement MCP as one of its capability protocols, translating MCP tool definitions into provider-specific implementations. In this paper's scope, the execution runtime does not optimize $Q$ or $P$; it only measures, normalizes, and forwards these fields for orchestration-layer policy decisions.
 
-\paragraph{Principle.}
-\emph{Capability execution should be dynamically routed based on context.}
+\subsection{Principle 2: Cognition--Action Separation Principle}
 
-\paragraph{Routing function.}
-\begin{equation}
-\mathrm{Route}(C, \mathrm{Context}) \rightarrow \mathrm{Provider}
-\label{eq:routing}
-\end{equation}
+\textbf{Principle:} \emph{AI cognition and capability execution should be separated by an action layer.}
 
-\paragraph{Context parameters.}
+\textbf{Architecture:}
+\begin{verbatim}
+Cognition Layer (reasoning, planning, memory)
+        |
+        v
+  Action Layer (routing, execution)
+        |
+        v
+  Capability Providers
+\end{verbatim}
+
+\textbf{Rationale:} Without this separation, agents must directly call APIs, tools, and services, leading to:
 \begin{itemize}
-  \item \textbf{Latency:} response-time requirements.
-  \item \textbf{Cost:} budget constraints.
-  \item \textbf{Policy:} organizational or regulatory policies.
-  \item \textbf{Availability:} provider uptime and reliability.
-  \item \textbf{Security:} data handling and privacy requirements.
+    \item Tight coupling to specific providers
+    \item Low portability across different execution environments
+    \item Ecosystem fragmentation
 \end{itemize}
 
-For example, for a capability such as \texttt{translate}, available providers may expose different cost and latency trade-offs. The routing system dynamically selects the provider based on context. This mechanism is analogous to DNS routing or service-mesh routing~\cite{consul_service_mesh}, but the routed object here is a capability rather than a network request.
+The action layer mediates between cognitive processes (deciding what to do) and execution processes (performing the action), enabling agents to focus on reasoning while the execution layer handles the mechanics of capability invocation.
+
+\subsection{Principle 3: Capability Routing Principle}
+
+\textbf{Principle:} \emph{Capability execution should be dynamically routed based on context.}
+
+\textbf{Routing Function:}
+\[
+\texttt{Route}(C, \texttt{Context}) \rightarrow \texttt{Provider}
+\]
+
+\textbf{Context Parameters:}
+\begin{itemize}
+    \item \textbf{Latency:} Response time requirements
+    \item \textbf{Cost:} Budget constraints
+    \item \textbf{Policy:} Organizational or regulatory policies
+    \item \textbf{Availability:} Provider uptime and reliability
+    \item \textbf{Security:} Data handling and privacy requirements
+\end{itemize}
+
+\textbf{Example:} For a capability \texttt{translate}, available providers might include:
+\begin{itemize}
+    \item Provider A: Lower cost, higher latency
+    \item Provider B: Higher cost, lower latency
+\end{itemize}
+
+The routing system dynamically selects based on context. If the user priority is speed, Provider B is selected. If cost optimization is paramount, Provider A is chosen.
+
+\textbf{Analogy:} This mechanism is similar to DNS routing or service mesh routing~\cite{consul2024}, but the objects being routed are capabilities rather than network requests.
 
 \subsection{Principle 4: Capability Graph Execution}
 
-\paragraph{Principle.}
-\emph{Complex AI tasks can be modeled as execution over a capability graph.}
+\textbf{Principle:} \emph{Complex AI tasks can be modeled as execution over a capability graph.}
 
-\paragraph{Formal definition.}
-A capability graph is defined as
-\begin{equation}
-G = (\mathrm{Capabilities}, \mathrm{Dependencies})
-\label{eq:capability-graph}
-\end{equation}
-and is constrained to a directed acyclic graph for execution safety and deterministic ordering.
+\textbf{Formal Definition:} A Capability Graph $G$ is defined as:
+\[
+G = (\texttt{Capabilities}, \texttt{Dependencies})
+\]
 
-\paragraph{Example.}
-The task ``Write and publish a blog post'' can be represented as the capability graph shown in \cref{fig:capability-graph}.
+For execution safety and deterministic ordering, we constrain $G$ to a directed acyclic graph (DAG). Cycles are disallowed.
 
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[
-  node distance=1.2cm and 0.8cm,
-  capnode/.style={draw, rounded corners=2pt, minimum width=2.0cm, minimum height=0.8cm, align=center, fill=blue!6},
-  exec/.style={draw, rounded corners=2pt, minimum width=1.2cm, minimum height=0.6cm, align=center, fill=green!8},
-  >=Latex
-]
-\node[capnode] (search) {\texttt{search}};
-\node[capnode, right=of search] (sum) {\texttt{summarize}};
-\node[capnode, right=of sum] (gen) {\texttt{generate\_text}};
-\node[capnode, right=of gen] (trans) {\texttt{translate}};
-\node[capnode, right=of trans] (pub) {\texttt{publish}};
+\textbf{Example:} The task ``Write and publish a blog post'' corresponds to the capability graph:
 
-\node[exec, below=of search] (e1) {exec};
-\node[exec, below=of sum] (e2) {exec};
-\node[exec, below=of gen] (e3) {exec};
-\node[exec, below=of trans] (e4) {exec};
-\node[exec, below=of pub] (e5) {exec};
+\begin{verbatim}
+search -> summarize -> generate_text -> translate -> publish
+  |         |            |              |          |
+[exec]    [exec]       [exec]         [exec]     [exec]
+\end{verbatim}
 
-\draw[->] (search) -- (sum);
-\draw[->] (sum) -- (gen);
-\draw[->] (gen) -- (trans);
-\draw[->] (trans) -- (pub);
-
-\draw[->] (search) -- (e1);
-\draw[->] (sum) -- (e2);
-\draw[->] (gen) -- (e3);
-\draw[->] (trans) -- (e4);
-\draw[->] (pub) -- (e5);
-\end{tikzpicture}
-\caption{Capability graph for a multi-step publishing task.}
-\label{fig:capability-graph}
-\end{figure}
-
-\paragraph{Execution process.}
+\textbf{Execution Process:}
 \begin{enumerate}
-    \item The agent reasons about the task and constructs the capability graph.
-    \item The orchestration layer determines execution order and provider selection.
-    \item The execution runtime invokes each capability in sequence.
-    \item Results flow through the graph, with each capability receiving inputs from predecessor nodes.
+    \item Agent reasons about the task and constructs the capability graph
+    \item Orchestration layer determines execution order and provider selection
+    \item Execution runtime invokes each capability in sequence
+    \item Results flow through the graph, with each capability receiving inputs from predecessors
 \end{enumerate}
 
-This model enables complex tasks to be decomposed into composable capability sequences, while the execution runtime remains responsible only for the mechanics of invocation.
+This model enables complex tasks to be decomposed into composable capability sequences, with the execution runtime handling the mechanics of each capability invocation.

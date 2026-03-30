@@ -1,44 +1,48 @@
+%=============================================================================
+% Section 5: AI Protocol and Capability Definition
+%=============================================================================
 \section{AI Protocol and Capability Definition}
 
 \subsection{Protocol Role}
 
 The AI Protocol defines how capabilities are described. It specifies:
 \begin{itemize}
-  \item \textbf{Providers:} entities offering AI or non-AI capabilities.
-  \item \textbf{Models:} specific AI models with defined capabilities.
-  \item \textbf{Capability Types:} categories of capabilities such as chat, embedding, and image generation.
-  \item \textbf{Endpoints:} where capabilities can be invoked.
-  \item \textbf{Parameters:} input and output schemas.
+    \item \textbf{Providers:} Entities offering AI or non-AI capabilities
+    \item \textbf{Models:} Specific AI models with defined capabilities
+    \item \textbf{Capability Types:} Categories of capabilities (chat, embedding, image generation, etc.)
+    \item \textbf{Endpoints:} Where capabilities can be invoked
+    \item \textbf{Parameters:} Input and output schemas
 \end{itemize}
 
-The protocol serves as the contract boundary between orchestration and execution: orchestration decides policy, while execution enforces invocation semantics.
+The protocol serves as the contract boundary between orchestration and execution: orchestration decides policy, while execution enforces invocation semantics. The protocol is typically represented as structured manifests:
 
-The protocol is typically represented as structured manifests:
-\begin{lstlisting}[language={},caption={Provider-centric protocol manifest organization.},label={lst:provider-manifest}]
+\begin{verbatim}
 provider/
-|- metadata.yaml
-\- models/
-   |- model_a.yaml
-   \- model_b.yaml
-      \- capabilities/
-         |- chat.yaml
-         \- embedding.yaml
-\end{lstlisting}
+    +-- metadata.yaml
+    +-- models/
+    |     +-- model_a.yaml
+    |     +-- model_b.yaml
+    +-- capabilities/
+          +-- chat.yaml
+          +-- embedding.yaml
+\end{verbatim}
 
 \subsection{Capability Definition}
 
 Each capability is defined with:
 \begin{itemize}
-  \item \textbf{Name:} a semantic identifier such as \texttt{generate\_text} or \texttt{search\_web}.
-  \item \textbf{Input Schema:} a structured input specification.
-  \item \textbf{Output Schema:} a structured output specification.
-  \item \textbf{Execution Semantics:} the invocation and runtime behavior contract.
-  \item \textbf{Quality Metadata ($Q$):} measured quality fields emitted by execution.
-  \item \textbf{Pricing Metadata ($\Pi$):} metering and billing fields emitted by execution.
-  \item \textbf{Provider Metadata:} information about the provider offering this capability.
+    \item \textbf{Name:} Semantic identifier (e.g., \texttt{generate\_text}, \texttt{search\_web})
+    \item \textbf{Input Schema:} Structured input specification
+    \item \textbf{Output Schema:} Structured output specification
+    \item \textbf{Execution Semantics:} Invocation and runtime behavior contract
+    \item \textbf{Quality Metadata ($Q$):} Measured quality fields emitted by execution
+    \item \textbf{Pricing Metadata ($P$):} Metering and billing fields emitted by execution
+    \item \textbf{Provider Metadata:} Information about the provider offering this capability
 \end{itemize}
 
-\begin{lstlisting}[language={},caption={Example capability definition.},label={lst:capability-definition}]
+\textbf{Example Capability Definition:}
+
+\begin{lstlisting}[style=yamlstyle]
 name: generate_text
 description: Generate text based on a prompt
 input_schema:
@@ -73,23 +77,33 @@ provider:
 \subsection{Provider-Centric Organization}
 
 An important design decision is that capability descriptions remain provider-centric rather than capability-centric. The manifest structure follows:
-\begin{center}
-\texttt{Provider} $\rightarrow$ \texttt{Models} $\rightarrow$ \texttt{Capabilities}
-\end{center}
-rather than
-\begin{center}
-\texttt{Capability} $\rightarrow$ \texttt{Providers}.
-\end{center}
+
+\begin{verbatim}
+Provider -> Models -> Capabilities
+\end{verbatim}
+
+Rather than:
+
+\begin{verbatim}
+Capability -> Providers
+\end{verbatim}
 
 The runtime can dynamically construct a capability index:
-\begin{lstlisting}[language={},caption={Runtime-generated capability index view.},label={lst:capability-index}]
-chat/
-|- provider A
-|- provider B
-\- provider C
-embedding/
-|- provider A
-\- provider D
-\end{lstlisting}
 
-This index can be rebuilt periodically and optimized based on user preferences, latency measurements, cost calculations, and reliability metrics.
+\begin{verbatim}
+chat/
+    +-- provider A
+    +-- provider B
+    +-- provider C
+embedding/
+    +-- provider A
+    +-- provider D
+\end{verbatim}
+
+This index can be rebuilt periodically and optimized based on:
+\begin{itemize}
+    \item User preferences
+    \item Latency measurements
+    \item Cost calculations
+    \item Reliability metrics
+\end{itemize}

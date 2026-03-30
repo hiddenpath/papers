@@ -1,6 +1,6 @@
 %=============================================================================
-% Paper 1 v1.8: The AI Execution Layer
-% ArXiv Submission Package - Pure Format Conversion
+% Paper 2 v1.5: The AI Contact Layer
+% ArXiv Submission Package - Paper 1 Style
 %=============================================================================
 \documentclass[11pt,a4paper]{article}
 
@@ -34,12 +34,12 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{
-    arrows.meta,
-    positioning,
-    shapes.geometric,
-    fit,
-    backgrounds,
-    calc
+  arrows.meta,
+  positioning,
+  shapes.geometric,
+  fit,
+  backgrounds,
+  calc
 }
 
 %-----------------------------------------------------------------------------
@@ -50,43 +50,39 @@
 
 % Listing styles
 \lstdefinestyle{paperlisting}{
-    basicstyle=\ttfamily\small,
-    breaklines=true,
-    frame=single,
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
-    backgroundcolor=\color{gray!5},
-    rulecolor=\color{gray!50},
-    numbers=none,
-    xleftmargin=2em,
-    framexleftmargin=1.5em
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  backgroundcolor=\color{gray!5},
+  rulecolor=\color{gray!50},
+  numbers=none,
+  xleftmargin=2em,
+  framexleftmargin=1.5em
 }
 
 \lstdefinestyle{yamlstyle}{
-    style=paperlisting,
-    morekeywords={name,version,description,provider,model,type,properties,
-                  required,default,endpoint,method,timeout_ms,execution,
-                  input_schema,output_schema,capability,currency,metadata,
-                  billing_model,quality,pricing,telemetry_fields},
-    keywordstyle=\color{blue!70!black}\bfseries,
-    stringstyle=\color{green!50!black},
-    commentstyle=\color{gray}
+  style=paperlisting,
+  morekeywords={name,version,description,provider,model,type,properties,required,default,endpoint,method,timeout_ms,execution,input_schema,output_schema,capability,currency,metadata,category,tags,cost_per_call},
+  keywordstyle=\color{blue!70!black}\bfseries,
+  stringstyle=\color{green!50!black},
+  commentstyle=\color{gray}
 }
 
-\lstdefinestyle{pythonstyle}{
-    style=paperlisting,
-    language=Python,
-    morekeywords={def,return,try,except,raise,as,True,False,None},
-    keywordstyle=\color{blue!70!black}\bfseries,
-    stringstyle=\color{green!50!black},
-    commentstyle=\color{gray}
+\lstdefinestyle{typescriptstyle}{
+  style=paperlisting,
+  morekeywords={interface,Promise,string,boolean,number,any,Record,enum},
+  keywordstyle=\color{blue!70!black}\bfseries,
+  stringstyle=\color{green!50!black},
+  commentstyle=\color{gray}
 }
 
 \lstdefinestyle{jsonstyle}{
-    style=paperlisting,
-    morestring=[b]",
-    stringstyle=\color{green!50!black}
+  style=paperlisting,
+  morestring=[b]",
+  stringstyle=\color{green!50!black}
 }
 
 \lstset{style=paperlisting}
@@ -105,10 +101,10 @@
 %-----------------------------------------------------------------------------
 % Document Metadata
 %-----------------------------------------------------------------------------
-\title{The AI Execution Layer: A Minimal Runtime Architecture for AI-Native Systems}
+\title{The AI Contact Layer: Bridging Intelligent Behavior and the Physical and Digital World}
 \author{
-    Wang Luqiang\\
-    \texttt{ai-lib}
+  Wang Luqiang\\
+  \texttt{ai-lib}
 }
 \date{March 2026}
 
@@ -120,7 +116,7 @@
 
 % Preprint notice
 \begin{center}
-    \textbf{Preprint Version: 1.8}
+\textbf{Preprint Version: 1.5}
 \end{center}
 
 %-----------------------------------------------------------------------------
@@ -128,16 +124,16 @@
 %-----------------------------------------------------------------------------
 \input{sections/00_abstract}
 \input{sections/01_introduction}
-\input{sections/02_formal_model}
-\input{sections/03_minimal_execution}
-\input{sections/04_theoretical_foundation}
-\input{sections/05_protocol}
-\input{sections/06_stack}
-\input{sections/07_benefits}
-\input{sections/08_related_work}
-\input{sections/09_implementation}
-\input{sections/10_future_directions}
-\input{sections/11_limitations}
+\input{sections/02_intelligence_action}
+\input{sections/03_contact_layer_concept}
+\input{sections/04_architectural_realization}
+\input{sections/05_digital_physical}
+\input{sections/06_action_interface}
+\input{sections/07_comparison}
+\input{sections/08_evolution}
+\input{sections/09_personal_ai}
+\input{sections/10_ai_native_stack}
+\input{sections/11_philosophical}
 \input{sections/12_conclusion}
 \input{sections/appendices}
 \input{sections/references}

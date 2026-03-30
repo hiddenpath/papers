@@ -1,93 +1,132 @@
+%=============================================================================
+% Appendices
+%=============================================================================
 \appendix
 
-\section{Capability Execution Sequence Diagrams}
+\section{Capability Execution Sequence Diagram}
+\label{appendix:sequence}
 
 \subsection{Complete Execution Flow}
 
-The complete execution flow from agent intent to provider response is shown in \cref{fig:sequence-complete}.
+The following sequence diagram illustrates the complete flow from agent intent to capability execution:
 
-\begin{figure*}[t]
-  \centering
-  \resizebox{0.98\textwidth}{!}{%
-  \begin{tikzpicture}[
-    lifeline/.style={draw=gray!70, dashed, line width=0.7pt},
-    actorbox/.style={draw=black!70, rounded corners=2pt, minimum width=2.5cm, minimum height=1cm, align=center, font=\bfseries\small},
-    act/.style={draw=black!40, fill=green!12, minimum width=0.18cm},
-    msg/.style={-{Latex[length=2mm]}, line width=0.9pt},
-    ret/.style={-{Latex[length=2mm]}, dashed, line width=0.9pt},
-    note/.style={draw=black!50, rounded corners=2pt, fill=yellow!10, align=center, font=\small, inner sep=3pt}
-  ]
-    \node[actorbox, fill=blue!10] (a) at (0,0) {Agent\\Layer};
-    \node[actorbox, fill=orange!18] (o) at (4,0) {Orchestration\\Layer};
-    \node[actorbox, fill=green!15] (p) at (8,0) {Policy\\Orchestration};
-    \node[actorbox, fill=green!8] (r) at (12,0) {Execution\\Runtime};
-    \node[actorbox, fill=purple!12] (pr) at (16,0) {Provider\\API};
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    participant/.style={
+        draw,
+        rectangle,
+        minimum width=1.5cm,
+        minimum height=0.55cm,
+        align=center,
+        font=\footnotesize
+    },
+    arrow/.style={
+        -{Stealth[length=2mm, width=1.5mm]},
+        thick
+    },
+    returnarrow/.style={
+        -{Stealth[length=2mm, width=1.5mm]},
+        thick,
+        dashed
+    },
+    label/.style={font=\scriptsize}
+]
 
-    \foreach \x/\n in {0/a,4/o,8/p,12/r,16/pr} {
-      \draw[lifeline] (\x,-0.7) -- (\x,-12.7);
-    }
+% Participants
+\node[participant, fill=blue!12] (agent) at (0, 0) {Agent\\Layer};
+\node[participant, fill=green!12] (orch) at (2.8, 0) {Orchest.\\Layer};
+\node[participant, fill=yellow!15] (contact) at (5.6, 0) {Contact\\Layer};
+\node[participant, fill=orange!18] (exec) at (8.4, 0) {Execution\\Runtime};
+\node[participant, fill=purple!12] (prov) at (11.2, 0) {Provider\\API};
 
-    \draw[msg] (0,-1.4) -- node[above, font=\small] {1. Task Intent} (4,-1.4);
-    \draw[msg] (4,-2.4) -- node[above, font=\small] {2. Capability Requirement} (8,-2.4);
-    \draw[msg] (8,-3.4) -- node[above, font=\small] {3. Query Registry} (12,-3.4);
-    \draw[ret] (12,-4.4) -- node[above, font=\small] {4. Available Providers} (8,-4.4);
-    \node[note] at (8,-5.3) {5. Routing Decision\\(based on context)};
-    \draw[msg] (8,-6.2) -- node[above, font=\small] {6. Execution Directive} (12,-6.2);
-    \draw[msg] (12,-7.4) -- node[above, font=\small] {7. API Call} (16,-7.4);
-    \draw[ret] (16,-8.4) -- node[above, font=\small] {8. Response} (12,-8.4);
-    \draw[ret] (12,-9.4) -- node[above, font=\small] {9. Normalized Result} (8,-9.4);
-    \draw[ret] (8,-10.4) -- node[above, font=\small] {10. Capability Result} (4,-10.4);
-    \draw[ret] (4,-11.4) -- node[above, font=\small] {11. Task Result} (0,-11.4);
+% Vertical lines
+\foreach \x in {0, 2.8, 5.6, 8.4, 11.2} {
+    \draw[thick, gray!50] (\x, -0.45) -- (\x, -7.5);
+}
 
-    \draw[fill=green!15, draw=green!40] (11.88,-3.2) rectangle (12.12,-9.7);
-    \draw[fill=purple!12, draw=purple!35] (15.88,-7.2) rectangle (16.12,-8.6);
-    \draw[fill=green!12, draw=green!35] (7.88,-2.2) rectangle (8.12,-10.7);
-    \draw[fill=orange!18, draw=orange!40] (3.88,-1.2) rectangle (4.12,-11.7);
-  \end{tikzpicture}}
-  \caption{Complete execution flow from agent intent to normalized task result.}
-  \label{fig:sequence-complete}
-\end{figure*}
+% Messages (numbered)
+\draw[arrow] (0, -1) -- node[above, label] {1. Task Intent} (2.8, -1);
+\draw[arrow] (2.8, -1.6) -- node[above, label] {2. Capability Req.} (5.6, -1.6);
+\draw[arrow] (5.6, -2.2) -- node[above, label] {3. Query Registry} (5.6, -2.5);
+\draw[arrow] (5.6, -3.1) -- node[above, label] {4. Available Providers} (5.6, -3.4);
+\draw[arrow] (5.6, -4.0) -- node[above, label] {5. Routing Decision} (5.6, -4.3);
+\draw[arrow] (5.6, -4.9) -- node[above, label] {6. Exec Directive} (8.4, -4.9);
+\draw[arrow] (8.4, -5.5) -- node[above, label] {7. API Call} (11.2, -5.5);
+\draw[returnarrow] (11.2, -6.0) -- node[above, label] {8. Response} (8.4, -6.0);
+\draw[returnarrow] (8.4, -6.5) -- node[above, label] {9. Normalized} (5.6, -6.5);
+\draw[returnarrow] (5.6, -7.0) -- node[above, label] {10. Capability} (2.8, -7.0);
+\draw[returnarrow] (2.8, -7.5) -- node[above, label] {11. Task Result} (0, -7.5);
+
+\end{tikzpicture}
+\caption{Complete execution flow from agent intent to capability execution.}
+\label{fig:sequence-complete}
+\end{figure}
 
 \subsection{Error Handling Flow}
 
-The error propagation path is shown in \cref{fig:sequence-error}. The diagram preserves the bounded micro-retry distinction between network-level execution behavior and orchestration-level retry policy.
+When execution fails, the error propagation path:
 
-\begin{figure*}[t]
-  \centering
-  \resizebox{0.9\textwidth}{!}{%
-  \begin{tikzpicture}[
-    lifeline/.style={draw=gray!70, dashed, line width=0.7pt},
-    actorbox/.style={draw=black!70, rounded corners=2pt, minimum width=3cm, minimum height=1cm, align=center, font=\bfseries\small},
-    msg/.style={-{Latex[length=2mm]}, line width=0.9pt},
-    ret/.style={-{Latex[length=2mm]}, dashed, line width=0.9pt},
-    note/.style={draw=black!50, rounded corners=2pt, fill=yellow!10, align=center, font=\small, inner sep=3pt}
-  ]
-    \node[actorbox, fill=orange!18] (o) at (0,0) {Orchestration\\Layer};
-    \node[actorbox, fill=green!15] (p) at (5,0) {Policy\\Orchestration};
-    \node[actorbox, fill=green!8] (r) at (10,0) {Execution\\Runtime};
-    \node[actorbox, fill=purple!12] (pr) at (15,0) {Provider\\API};
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    participant/.style={
+        draw,
+        rectangle,
+        minimum width=1.8cm,
+        minimum height=0.55cm,
+        align=center,
+        font=\footnotesize
+    },
+    arrow/.style={
+        -{Stealth[length=2mm, width=1.5mm]},
+        thick
+    },
+    returnarrow/.style={
+        -{Stealth[length=2mm, width=1.5mm]},
+        thick,
+        dashed,
+        red!70!black
+    },
+    label/.style={font=\scriptsize}
+]
 
-    \foreach \x in {0,5,10,15} {
-      \draw[lifeline] (\x,-0.7) -- (\x,-8.8);
-    }
+% Participants
+\node[participant, fill=green!12] (orch) at (0, 0) {Orchest.\\Layer};
+\node[participant, fill=yellow!15] (contact) at (4, 0) {Contact\\Layer};
+\node[participant, fill=orange!18] (exec) at (8, 0) {Execution\\Runtime};
+\node[participant, fill=purple!12] (prov) at (12, 0) {Provider\\API};
 
-    \draw[msg] (0,-1.5) -- node[above, font=\small] {Execution Directive} (5,-1.5);
-    \draw[msg] (5,-2.7) -- node[above, font=\small] {API Call} (10,-2.7);
-    \draw[msg] (10,-3.9) -- node[above, font=\small] {Request} (15,-3.9);
-    \draw[ret] (15,-5.1) -- node[above, font=\small] {Error Response (429, 502)} (10,-5.1);
-    \node[note] at (10,-6.0) {Micro-Retry?\\if enabled \& transient};
-    \draw[ret] (10,-7.0) -- node[above, font=\small] {Execution Error (with details)} (5,-7.0);
-    \node[note] at (0,-8.0) {Policy Decision\\retry / fallback / abort};
-  \end{tikzpicture}}
-  \caption{Execution error propagation and policy handoff.}
-  \label{fig:sequence-error}
-\end{figure*}
+% Vertical lines
+\foreach \x in {0, 4, 8, 12} {
+    \draw[thick, gray!50] (\x, -0.45) -- (\x, -6.5);
+}
 
+% Messages
+\draw[arrow] (0, -1) -- node[above, label] {Execution Directive} (8, -1);
+\draw[arrow] (8, -1.6) -- node[above, label] {API Call} (12, -1.6);
+\draw[arrow] (8, -2.2) -- node[above, label] {Request} (12, -2.2);
+\draw[returnarrow] (12, -3.0) -- node[above, label, text=red!70!black] {Error (429, 502)} (8, -3.0);
+
+% Decision box
+\node[draw, rectangle, rounded corners, fill=orange!10, font=\scriptsize, minimum width=2.5cm] at (8, -4) {Micro-Retry?};
+\node[font=\scriptsize, text=gray] at (8, -4.5) {(if enabled \& transient)};
+
+\draw[returnarrow] (8, -5.2) -- node[above, label, text=red!70!black] {Execution Error} (4, -5.2);
+\node[font=\scriptsize, text=gray] at (2, -5.7) {Policy Decision: retry/fallback/abort};
+
+\end{tikzpicture}
+\caption{Error handling flow with micro-retry decision and policy escalation.}
+\label{fig:sequence-error}
+\end{figure}
+
+%-----------------------------------------------------------------------------
 \section{Capability Definition Examples}
+\label{appendix:examples}
 
 \subsection{Text Generation Capability}
 
-\begin{lstlisting}[caption={Example text-generation capability manifest.},label={lst:text-generation-capability}]
+\begin{lstlisting}[style=yamlstyle]
 name: generate_text
 version: "1.0"
 description: Generate text based on a prompt
@@ -119,7 +158,7 @@ execution:
 
 \subsection{Web Search Capability}
 
-\begin{lstlisting}[caption={Example web-search capability manifest.},label={lst:web-search-capability}]
+\begin{lstlisting}[style=yamlstyle]
 name: search_web
 version: "1.0"
 description: Search the web for information
@@ -151,11 +190,13 @@ execution:
   method: GET
 \end{lstlisting}
 
+%-----------------------------------------------------------------------------
 \section{Runtime Pseudocode}
+\label{appendix:pseudocode}
 
 \subsection{Execute Capability}
 
-\begin{lstlisting}[caption={Pseudocode for execution-runtime capability invocation.},label={lst:execute-capability}]
+\begin{lstlisting}[style=pythonstyle]
 def execute_capability(request: CapabilityRequest) -> Result:
     """
     Execute a capability request.
@@ -198,7 +239,7 @@ def execute_capability(request: CapabilityRequest) -> Result:
 
 \subsection{Request Translation}
 
-\begin{lstlisting}[caption={Pseudocode for protocol-to-provider request translation.},label={lst:request-translation}]
+\begin{lstlisting}[style=pythonstyle]
 def translate_request(request: CapabilityRequest) -> dict:
     """
     Translate standardized request to provider-specific format.

@@ -1,0 +1,72 @@
+%=============================================================================
+% Section 6: The Action Interface Definition
+%=============================================================================
+\section{The Action Interface Definition}
+
+\subsection{Formal Definition}
+
+We define the action interface formally:
+
+\begin{definition}
+The Action Interface is the boundary between AI cognition and the capability ecosystem, defined by:
+\[
+\text{ActionInterface} = (\text{Capabilities}, \text{Routing}, \text{Execution})
+\]
+Where:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Capabilities:} The set of available capabilities $C = \{c_1, c_2, \ldots, c_n\}$
+\item \textbf{Routing:} A function $\text{Route}(c, \text{context}) \to \text{provider}$
+\item \textbf{Execution:} A function $\text{Execute}(c, \text{input}, \text{provider}) \to \text{output}$
+\end{itemize}
+\end{definition}
+
+\textbf{PolicyDecision Formalization:} The routing decision process can be formalized as:
+\[
+\text{PolicyDecision}(c, \text{ctx}) \to (\text{provider}, \text{constraints}, \text{metadata})
+\]
+
+Where the input includes $c$ (the capability being requested) and $\text{ctx}$ (execution context containing preferences, constraints, and history), and the output includes the selected provider, applied constraints, and decision rationale.
+
+\textbf{Decision Logic:}
+\[
+\text{PolicyDecision}(c, \text{ctx}) = \arg\min_{p \in \text{Providers}(c)} \text{Score}(p, \text{pref}, \text{cons})
+\]
+
+Where:
+\[
+\text{Score}(p, \text{pref}, \text{cons}) = w_1 \cdot \text{LatencyScore}(p) + w_2 \cdot \text{CostScore}(p) + w_3 \cdot \text{QualityScore}(p) + \text{Penalty}(p, \text{cons})
+\]
+
+with $w_1 + w_2 + w_3 = 1.0$ and $\text{Penalty}(p, \text{cons}) = 0$ if $p$ satisfies all constraints, $\infty$ otherwise.
+
+\textbf{Dynamic Weight Override:} The preference weights $(w_1, w_2, w_3)$ support dynamic override by the Cognition Layer at request time. This enables agents to adjust routing behavior based on task urgency or context.
+
+This formalization enables transparency (decisions can be explained), optimization (scoring functions can be tuned), and compliance (constraints are explicitly represented).
+
+\subsection{Precision Statement}
+
+We can state the role of the contact layer precisely:
+
+\begin{quote}
+\textit{The Contact Layer is the policy and routing component of the action interface between AI cognition and the capability ecosystem, responsible for capability routing, provider selection, and policy evaluation.}
+\end{quote}
+
+This definition captures:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Position:} Between cognition and execution runtime
+\item \textbf{Function:} Routing, policy evaluation, provider selection
+\item \textbf{Scope:} Control plane of the Action Layer
+\item \textbf{Domain:} Capability mediation (not execution mechanics)
+\end{itemize}
+
+\textbf{Note on Formalization:} The PolicyDecision formalization above is conceptual, illustrating the decision logic framework. Detailed algorithm implementations, including constraint satisfaction, weight learning, and multi-objective optimization, are addressed in the ai-lib reference implementations.
+
+\subsection{Architectural Significance}
+
+This definition has architectural implications:
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Separation of Concerns:} Cognition and action are architecturally distinct, enabling independent evolution.
+\item \textbf{Interface Contracts:} The action layer defines clear contracts for capability invocation, enabling provider substitution.
+\item \textbf{Ecosystem Participation:} By defining the action interface, systems can participate in capability ecosystems.
+\item \textbf{Decoupling Principle:} Agents need not know provider details---they express capability requirements, and the action layer handles implementation.
+\end{enumerate}

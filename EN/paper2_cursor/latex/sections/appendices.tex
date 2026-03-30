@@ -1,0 +1,196 @@
+%=============================================================================
+% Appendices
+%=============================================================================
+
+\appendix
+
+\section{Capability Interaction Patterns}
+
+\subsection{Simple Capability Invocation}
+
+\begin{enumerate}[label=\arabic*.]
+\item Agent Decision: ``Search for AI architecture papers''
+\item Contact Layer: Route to \texttt{search\_web} capability
+\item Provider Selection: Choose Provider A (fast)
+\item Execution Runtime: Invoke Provider A API
+\item Result: Return search results to agent
+\end{enumerate}
+
+\subsection{Multi-Capability Workflow}
+
+\begin{enumerate}[label=\arabic*.]
+\item Agent Decision: ``Write a blog post about AI''
+\item Contact Layer: Decompose into capability sequence:
+  \begin{enumerate}[label=\alph*.]
+  \item \texttt{search\_web}(``AI topics'')
+  \item \texttt{summarize}(search\_results)
+  \item \texttt{generate\_text}(blog\_outline)
+  \item \texttt{edit\_text}(generated\_draft)
+  \end{enumerate}
+\item Execution: Execute each capability in sequence
+\item Coordination: Pass results between capabilities
+\item Result: Return final blog post
+\end{enumerate}
+
+\subsection{Error Handling Pattern}
+
+\begin{enumerate}[label=\arabic*.]
+\item Agent Request: invoke capability X
+\item Contact Layer: Route to Provider A
+\item Execution: Provider A fails (timeout)
+\item Contact Layer: Retry with Provider B
+\item Execution: Provider B succeeds
+\item Result: Return result from Provider B
+\end{enumerate}
+
+\section{Capability Definition Schema}
+
+\subsection{Capability Schema}
+
+\begin{lstlisting}[style=yamlstyle]
+capability_schema:
+  name: string
+  version: string
+  description: string
+  input_schema:
+    type: object
+    properties: {}
+    required: []
+  output_schema:
+    type: object
+    properties: {}
+  execution:
+    endpoint: string
+    method: enum [GET, POST, PUT, DELETE]
+    timeout_ms: integer
+    retry_policy:
+      max_retries: integer
+      backoff_ms: integer
+  provider:
+    name: string
+    version: string
+  metadata:
+    category: enum [AI, API, Tool, Device]
+    tags: [string]
+    cost_per_call: number
+\end{lstlisting}
+
+\subsection{Example Capability}
+
+\begin{lstlisting}[style=yamlstyle]
+name: control_device
+version: "1.0"
+description: Control an IoT device
+input_schema:
+  type: object
+  properties:
+    device_id:
+      type: string
+    action:
+      type: string
+      enum: [turn_on, turn_off, set_level]
+    level:
+      type: number
+      description: Level for set_level action
+  required: [device_id, action]
+output_schema:
+  type: object
+  properties:
+    status:
+      type: string
+      enum: [success, failure]
+    device_state:
+      type: object
+    timestamp:
+      type: string
+execution:
+  endpoint: /v1/devices/{device_id}/control
+  method: POST
+  timeout_ms: 5000
+  retry_policy:
+    max_retries: 2
+    backoff_ms: 1000
+provider:
+  name: iot_controller
+  version: "2.1"
+metadata:
+  category: Device
+  tags: [iot, physical, automation]
+  cost_per_call: 0.001
+\end{lstlisting}
+
+\section{Contact Layer Interface Specification}
+
+\subsection{Routing Interface}
+
+\begin{lstlisting}[style=typescriptstyle]
+interface ContactLayer {
+  /**
+   * Route a capability request to an appropriate provider.
+   */
+  route(request: CapabilityRequest): Promise<RoutingDecision>;
+
+  /**
+   * Evaluate policies for capability invocation.
+   */
+  evaluatePolicy(
+    capability: string,
+    context: ExecutionContext
+  ): Promise<PolicyDecision>;
+
+  /**
+   * Select provider based on context.
+   */
+  selectProvider(
+    capability: string,
+    context: ExecutionContext
+  ): Promise<Provider>;
+
+  /**
+   * Choose execution environment.
+   */
+  selectEnvironment(
+    capability: string,
+    provider: Provider
+  ): Promise<Environment>;
+}
+
+interface RoutingDecision {
+  capability: string;
+  provider: Provider;
+  environment: Environment;
+  policyCompliant: boolean;
+  estimatedLatency: number;
+  estimatedCost: number;
+}
+\end{lstlisting}
+
+\subsection{Capability Request Structure}
+
+\begin{lstlisting}[style=typescriptstyle]
+interface CapabilityRequest {
+  // Capability identification
+  capability: string;
+  version?: string;
+
+  // Input data
+  input: Record<string, any>;
+
+  // Execution context
+  context: {
+    sessionId: string;
+    requestId: string;
+    userId?: string;
+    priority?: 'low' | 'medium' | 'high';
+    deadline?: Date;
+  };
+
+  // Routing preferences
+  preferences?: {
+    preferredProvider?: string;
+    maxLatency?: number;
+    maxCost?: number;
+    requirePrivacy?: boolean;
+  };
+}
+\end{lstlisting}
