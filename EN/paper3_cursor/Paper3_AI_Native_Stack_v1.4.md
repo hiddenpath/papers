@@ -11,7 +11,7 @@
 
 The rapid expansion of AI capabilities has created a fragmented integration landscape. Applications must interact with multiple AI providers, tools, services, and devices, each exposing different APIs and capability definitions. This fragmentation leads to tight coupling, limited portability, and ecosystem fragmentation.
 
-This paper introduces the AI Native Software Stack, a layered architecture designed for agent-driven environments. The stack comprises five distinct layers: Interface Layer, AI Native Applications, AI Action Layer, Capability Ecosystem, and Infrastructure. Each layer has clearly defined responsibilities and interfaces, enabling modularity and interoperability.
+This paper introduces the AI Native Software Stack, a layered architecture designed for agent-driven environments. The stack comprises six layers: Interface Layer, AI Native Applications, AI Cognition Layer, AI Action Layer, Capability Ecosystem, and Infrastructure. Each layer has clearly defined responsibilities and interfaces, enabling modularity and interoperability.
 
 We present the theoretical foundation of this architecture, including four core principles: the Capability Abstraction Principle, the Cognition–Action Separation Principle, the Capability Routing Principle, and the Capability Graph Execution model. We demonstrate how this stack enables the transition from API Economy to Capability Economy, where capabilities become the fundamental units of software composition.
 
@@ -148,10 +148,10 @@ Despite lock-in incentives, several forces drive providers toward capability sta
 
 | Force | Mechanism | Example |
 |-------|-----------|---------|
-| **Developer demand** | Developers prefer portable applications | LangChain's~\cite{langchain2024} multi-provider support |
+| **Developer demand** | Developers prefer portable applications | LangChain [9] multi-provider support |
 | **Enterprise requirements** | Procurement mandates flexibility | "No vendor lock-in" clauses |
 | **Ecosystem effects** | Standards increase total market size | USB, HTTP, SQL history |
-| **Competitive pressure** | Laggards adopt standards to compete | OpenAI's API evolution~\cite{openai2023} |
+| **Competitive pressure** | Laggards adopt standards to compete | OpenAI API evolution [10] |
 
 **Technical Adoption Mechanisms:**
 
@@ -220,7 +220,7 @@ Similar transitions occurred in:
 - **Databases**: Oracle lock-in → PostgreSQL, MySQL standards
 - **Communication**: Proprietary protocols → SIP, WebRTC standards
 
-In each case, standards emerged through developer demand and competitive pressure, not purely through provider willingness. Similar dynamics are observed in container orchestration~\cite{kubernetes2016} and database standards. The Capability Economy follows this pattern: market forces will drive standardization regardless of individual provider preferences.
+In each case, standards emerged through developer demand and competitive pressure, not purely through provider willingness. Similar dynamics are observed in container orchestration[2] and database standards. The Capability Economy follows this pattern: market forces will drive standardization regardless of individual provider preferences.
 
 ### 2.4 What is a Capability?
 
@@ -578,6 +578,7 @@ C = (Name, Input Schema, Output Schema, Execution Semantics)
 ```
 
 A provider P implements capability C:
+For full economic observability, capabilities are extended with quality telemetry **Q** and pricing metadata **P** (see Paper 1 for the detailed quintuple definition `C = (I, O, Σ, Q, P)`).
 ```
 P implements C
 ```
@@ -1676,12 +1677,12 @@ This layered approach enables deterministic testing while preserving the ability
 
 ### 9.4 Current AI Frameworks
 
-**LangChain~\cite{langchain2024}:**
+****LangChain** [9]:**
 - Provides agent orchestration
 - Embeds execution in framework
 - Limited standardization
 
-**Model Context Protocol (MCP)~\cite{mcp2024}:**
+****Model Context Protocol (MCP)** [12]:**
 - Defines capability-like tools
 - Lacks action layer architecture
 - Provider-specific integration
@@ -1691,7 +1692,7 @@ This layered approach enables deterministic testing while preserving the ability
   - Missing capability graph execution model
   - Limited multi-provider composition
 
-**OpenAI Plugins~\cite{openai2023}:**
+****OpenAI Plugins** [10]:**
 - Capability exposure model
 - Provider-centric
 - No capability abstraction
@@ -2241,8 +2242,7 @@ This example illustrates the core benefit of capability abstraction: application
 ---
 
 **Acknowledgments**
-
-The authors thank the reviewers whose feedback significantly strengthened this paper. Their comments led to: (1) clarification of the Cognition–Action boundary in routing decisions and the introduction of the micro-cognition pattern; (2) expansion of the capability graph execution model to address distributed failure handling and the Saga pattern; (3) deeper analysis of incentive compatibility and the market forces driving capability standardization; (4) requesting inline citations for improved academic rigor; and (5) suggesting updates to reference versions. We also thank the reviewers for suggesting the portability demonstration and the MCP limitations comparison, which clarified the Action Layer's unique contributions.
+The authors thank early readers and contributors to the ai-lib and AI Protocol implementations for their feedback.
 
 **Open Source Resources:** Reference implementations are available at https://github.com/ailib-official, including ai-lib-rust, ai-lib-python, ai-lib-ts, ai-lib-go, ai-protocol, and ai-lib-benchmark. The AI Protocol specification is maintained at https://github.com/ailib-official/ai-protocol.
 
@@ -2253,4 +2253,4 @@ The authors thank the reviewers whose feedback significantly strengthened this p
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.2 | March 20, 2026 | Added micro-cognition pattern, Saga pattern, portability demonstration |
-| 1.3 | March 31, 2026 | Added inline citations, updated references, added MCP citation |
+| 1.4 | March 31, 2026 | Fixed layer count (six), added quintuple reference, simplified acknowledgments, cleaned citations |
